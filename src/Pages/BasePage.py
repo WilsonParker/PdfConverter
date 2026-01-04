@@ -1,12 +1,20 @@
 from abc import ABC, abstractmethod
+from typing import Any
 
-from src.Utils.PdfUtil import PdfUtil
+from src.Utils.FileUtil import FileUtil
+from src.Utils.StringUtil import StringUtil
 
 
 class BasePage(ABC):
     def __init__(self):
         super().__init__()
-        self.pdfUtil = PdfUtil()
+        self.fileUtil = FileUtil()
+        self.stringUtil = StringUtil()
+
+    # 페이지를 구분할 key
+    @abstractmethod
+    def getKey(self) -> str:
+        pass
 
     # 현재 페이지 정보를 실행하는게 맞는지 파악 합니다
     @abstractmethod
@@ -17,3 +25,14 @@ class BasePage(ABC):
     @abstractmethod
     def extract(self, page) -> dict:
         pass
+
+    # page.extract_words() 결과를 단어 리스트로 변환합니다
+    def convertWords(self, page) -> list[Any]:
+        return [w['text'] for w in page.extract_words()]
+
+    # words 를 순서대로 출력하여 디버깅에 도움을 줍니다
+    def printWords(self, words) :
+        for i, word in enumerate(words, start=0):
+            # i는 번호, word는 해당 단어의 정보(딕셔너리)
+            # print(f"{i}. {word['text']} (위치: {word['x0']}, {word['top']})")
+            print(f"{i}. {word}")
