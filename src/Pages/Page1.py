@@ -2,7 +2,7 @@ import re
 
 from .BasePage import BasePage
 
-
+# 전체 보장 현황 페이지
 class Page1(BasePage):
 
     def getKey(self) -> str:
