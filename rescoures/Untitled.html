@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Insurance Portfolio - 1</title>
+
+    <!-- ✅ 폰트: 환경에 따라 없을 수 있으니 fallbacks 충분히 -->
+    <style>
+      /* =========================
+         1) PRINT / PAGE BASE
+      ========================= */
+      @page {
+        size: A4;
+        /* 디자인 여백 느낌: 상/우/하/좌 */
+        margin: 14mm 14mm 16mm 14mm;
+      }
+
+      :root {
+        --primary: #2f4f96; /* 메인 블루 */
+        --primary-2: #5b75b6; /* 테이블 헤더 톤 */
+        --line: #cfd6e6; /* 테이블 라인 */
+        --zebra: #f3f5fa; /* 연한 배경 */
+        --item-bg: #eef1f7; /* '담보 현황' 2번째 컬럼 */
+        --total-bg: #fff6bf; /* '합계' 컬럼 */
+        --text: #111827;
+        --muted: #6b7280;
+      }
+
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        background: #fff;
+        color: var(--text);
+        font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', system-ui,
+          -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      /* A4 고정 래퍼 */
+      .page {
+        width: 210mm;
+        min-height: 297mm;
+        box-sizing: border-box;
+        padding: 14mm;
+      }
+
+      /* =========================
+         2) HEADER
+      ========================= */
+      .header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        margin-bottom: 6mm;
+      }
+
+      .title-wrap {
+        display: flex;
+        align-items: center;
+        gap: 3.5mm;
+      }
+
+      /* 왼쪽 파란 세로 라인 */
+      .title-bar {
+        width: 1.2mm;
+        height: 10mm;
+        background: var(--primary);
+      }
+
+      .page-title {
+        font-size: 22pt;
+        font-weight: 800;
+        letter-spacing: -0.2pt;
+        margin: 0;
+      }
+
+      .page-meta {
+        font-size: 10.5pt;
+        color: var(--muted);
+        margin-top: 1mm;
+        white-space: nowrap;
+      }
+
+      /* =========================
+         3) TOP SUMMARY (디자인1 계약현황 카드들)
+      ========================= */
+      .top-grid {
+        display: grid;
+        grid-template-columns: 1.15fr 1fr;
+        gap: 8mm;
+        align-items: stretch;
+        margin-bottom: 6mm;
+      }
+
+      .left-stack {
+        display: grid;
+        gap: 4mm;
+      }
+
+      .summary-row {
+        background: var(--primary);
+        color: #fff;
+        border-radius: 6mm;
+        padding: 6mm 8mm;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        box-sizing: border-box;
+        height: 20mm;
+      }
+
+      .summary-label {
+        font-size: 12.5pt;
+        font-weight: 800;
+      }
+
+      .summary-value {
+        font-size: 20pt;
+        font-weight: 900;
+        letter-spacing: -0.2pt;
+      }
+
+      .summary-unit {
+        font-size: 11pt;
+        font-weight: 700;
+        margin-left: 1.5mm;
+        opacity: 0.95;
+      }
+
+      .right-box {
+        border: 1.2pt solid var(--primary);
+        border-radius: 6mm;
+        overflow: hidden;
+        box-sizing: border-box;
+      }
+
+      .right-head {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        background: var(--primary);
+        color: #fff;
+        font-weight: 800;
+        text-align: center;
+        padding: 4mm 0;
+        font-size: 11.5pt;
+      }
+
+      .right-body {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        text-align: center;
+        padding: 10mm 0 8mm;
+      }
+
+      .right-big {
+        font-size: 18.5pt;
+        font-weight: 900;
+        color: var(--primary);
+        line-height: 1.1;
+      }
+
+      .right-unit {
+        display: block;
+        margin-top: 2mm;
+        font-size: 11pt;
+        font-weight: 700;
+        color: var(--muted);
+      }
+
+      /* =========================
+         4) BULLETS
+      ========================= */
+      .bullets {
+        margin: 4mm 0 8mm;
+        padding: 0;
+        list-style: none;
+        color: #4b5563;
+        font-size: 9.8pt;
+        line-height: 1.6;
+      }
+      .bullets li {
+        margin: 1mm 0;
+      }
+      .bullets li::before {
+        content: '•';
+        display: inline-block;
+        width: 4mm;
+        color: #9aa3b2;
+      }
+
+      /* =========================
+         5) SECTION TITLE
+      ========================= */
+      .section-title {
+        display: flex;
+        align-items: center;
+        gap: 3.5mm;
+        margin: 10mm 0 4mm;
+      }
+      .section-title .bar {
+        width: 1.2mm;
+        height: 10mm;
+        background: var(--primary);
+      }
+      .section-title h2 {
+        margin: 0;
+        font-size: 22pt;
+        font-weight: 900;
+        color: var(--primary);
+        letter-spacing: -0.2pt;
+      }
+
+      /* =========================
+         6) TABLE (전체 보장 현황)
+      ========================= */
+      table.tbl {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+        font-size: 10.5pt;
+      }
+
+      .tbl th,
+      .tbl td {
+        border: 1pt solid var(--line);
+        padding: 3.2mm 3mm;
+        vertical-align: middle;
+      }
+
+      .tbl thead th {
+        background: var(--primary-2);
+        color: #fff;
+        font-weight: 900;
+        text-align: center;
+        padding: 4mm 2mm;
+      }
+
+      /* 왼쪽 1열: 그룹(사망장해) */
+      .td-group {
+        background: var(--primary);
+        color: #fff;
+        font-weight: 900;
+        text-align: center;
+        letter-spacing: -0.2pt;
+      }
+
+      /* 2열: 담보항목 */
+      .td-item {
+        background: var(--item-bg);
+        font-weight: 800;
+        color: #2f3a4f;
+      }
+
+      /* 3열: 합계(노랑) */
+      .td-total {
+        background: var(--total-bg);
+        font-weight: 900;
+        text-align: right;
+      }
+
+      /* 숫자 컬럼 우측 정렬 */
+      .td-num {
+        text-align: right;
+        font-weight: 700;
+        color: #233049;
+      }
+
+      /* 빈칸용(디자인상 줄은 계속 유지) */
+      .is-empty {
+        color: transparent; /* 값이 없어도 칸 높이/라인 유지 */
+      }
+
+      /* PDF 안정화 */
+      tr {
+        break-inside: avoid;
+      }
+
+      /* ✅ 필요 시 미세 조정 */
+      .note-gap {
+        height: 2mm;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="page">
+      <!-- HEADER -->
+      <div class="header">
+        <div class="title-wrap">
+          <div class="title-bar"></div>
+          <h1 class="page-title">계약 현황</h1>
+        </div>
+
+        <div class="page-meta">Insurance Portfolio - {{ summary.page_no }}</div>
+      </div>
+
+      <!-- TOP SUMMARY -->
+      <section class="top-grid">
+        <div class="left-stack">
+          <div class="summary-row">
+            <div class="summary-label">{{ summary.contract_status_label }}</div>
+            <div class="summary-value">
+              {{ summary.contract_count }}<span class="summary-unit">건</span>
+            </div>
+          </div>
+
+          <div class="summary-row">
+            <div class="summary-label">월 보험료</div>
+            <div class="summary-value">
+              {{ summary.monthly_premium_total }}<span class="summary-unit">원</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="right-box">
+          <div class="right-head">
+            <div>손해보험</div>
+            <div>생명보험</div>
+            <div>공제/체신보험</div>
+          </div>
+          <div class="right-body">
+            <div>
+              <div class="right-big">{{ summary.nonlife_count }}</div>
+              <span class="right-unit">건</span>
+            </div>
+            <div>
+              <div class="right-big">{{ summary.life_count }}</div>
+              <span class="right-unit">건</span>
+            </div>
+            <div>
+              <div class="right-big">{{ summary.mutual_count }}</div>
+              <span class="right-unit">건</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- BULLETS (디자인에 있는 주석 4줄) -->
+      <ul class="bullets">
+        <li>
+          상기 계약 정보는 한국신용정보원의 계약정보 직접관리 정책에 따라 (손보) 2002년 12월 이후,
+          (생보)2000년 4월 이후, (공제/체신)2009년 10월 이후 계약 건만 조회됩니다
+        </li>
+        <li>보장분석 일 기준 계약상태 “정상건”만 조회됩니다 (실효/해지 건은 제외)</li>
+        <li>
+          월납 보험료는 “피보험자” 기준으로 제공되며, 납입완료된 건은 합계에서 제외될 수 있습니다.
+        </li>
+        <li>
+          최초 계약 이후 계약 변경, 특약별 납입기간 상이, 갱신, 단독 실손보험 가입 등으로 실제 납입
+          보험료와 차이가 있을 수 있습니다.
+        </li>
+      </ul>
+
+      <!-- SECTION TITLE -->
+      <div class="section-title">
+        <div class="bar"></div>
+        <h2>전체 보장 현황</h2>
+      </div>
+
+      <!-- TABLE -->
+      <table class="tbl">
+        <colgroup>
+          <col style="width: 18mm" />
+          <col style="width: 54mm" />
+          <col style="width: 28mm" />
+          <col style="width: 28mm" />
+          <col style="width: 28mm" />
+          <col style="width: 32mm" />
+        </colgroup>
+        <thead>
+          <tr>
+            <th colspan="2">담보 현황</th>
+            <th>합계</th>
+            <th>손해보험</th>
+            <th>생명보험</th>
+            <th>공제/체신보험</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in guarantee_rows %}
+          <tr>
+            <td class="td-group">{{ r.group }}</td>
+            <td class="td-item">{{ r.item }}</td>
+
+            <td class="td-total {{ 'is-empty' if not r.total else '' }}">
+              {{ r.total if r.total else '0' }}
+            </td>
+
+            <td class="td-num {{ 'is-empty' if not r.nonlife else '' }}">
+              {{ r.nonlife if r.nonlife else '-' }}
+            </td>
+            <td class="td-num {{ 'is-empty' if not r.life else '' }}">
+              {{ r.life if r.life else '-' }}
+            </td>
+            <td class="td-num {{ 'is-empty' if not r.mutual else '' }}">
+              {{ r.mutual if r.mutual else '-' }}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </body>
+</html>

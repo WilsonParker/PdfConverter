@@ -1,0 +1,140 @@
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  color: #111;
+  font-size: 12px;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.page {
+  padding: var(--space-5);
+  flex-direction: column;
+  display: flex;
+  flex-direction: column;
+  gap: 44px;
+}
+
+/* Utilities */
+.text-right {
+  text-align: right;
+}
+.text-center {
+  text-align: center;
+}
+.muted {
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Section title */
+section {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+.section-title {
+  font-weight: 700;
+  color: var(--color-primary);
+  font-size: 30px;
+}
+
+/* Header summary */
+.header-summary {
+  display: flex;
+  height: 160px;
+  align-items: stretch;
+  gap: 24px;
+}
+.summary-kpi-group {
+  flex: 1 1 50%;
+  display: flex;
+  flex-direction: column;
+  gap: 24px; /* KPI gap */
+}
+.kpi {
+  background: var(--color-primary);
+  color: #fff;
+  padding: var(--space-3);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 800;
+  height: 68px;
+  box-sizing: border-box;
+}
+.kpi {
+  font-size: 24px;
+}
+.kpi .value .num-lg {
+  font-size: 34px;
+  margin-right: 8px;
+}
+
+.insurance-type-summary {
+  border: 2px solid var(--color-primary);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  background: #fff;
+  flex: 1 1 50%;
+  display: flex;
+}
+
+/* Tables */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+.table th,
+.table td {
+  border: 1px solid var(--color-line);
+  padding: 6px;
+  vertical-align: middle;
+}
+.table thead th {
+  background: var(--color-primary);
+  color: #fff;
+  font-weight: 700;
+}
+.table.zebra tbody tr:nth-child(odd) td {
+  background: var(--color-zebra);
+}
+.table .narrow {
+  width: 8%;
+}
+.table .wide {
+  width: 24%;
+}
+
+/* template-01-guarantee-overview */
+.table.clean th,
+.table.clean td {
+  border: none;
+}
+.num-lg {
+  font-size: 18px;
+  font-weight: 800;
+}
+
+/* Table column backgrounds to match visual spec */
+.bg-dambo {
+  background: var(--color-zebra);
+}
+.bg-total {
+  background: #fff7cf;
+}
+.sideband {
+  background: var(--color-secondary);
+  color: #fff;
+  text-align: center;
+  font-weight: 700;
+}
+.vertical-text {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+}
