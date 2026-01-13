@@ -1,8 +1,32 @@
+:root {
+  --color-primary: #354c9c;
+  --color-primary-op1: rgba(53, 76, 156, 0.1);
+  --color-primary-op5: rgba(53, 76, 156, 0.5);
+  --color-primary-op8: rgba(53, 76, 156, 0.8);
+  --color-secondary: #fff7bd;
+  --color-white: #fff;
+
+  --space-1: 2mm;
+  --space-2: 4mm;
+  --space-3: 6mm;
+  --space-4: 8mm;
+  --space-5: 12mm;
+  --space-6: 16mm;
+
+  --radius-xs: 1mm;
+  --radius-sm: 2mm;
+  --radius-md: 3mm;
+  --radius-lg: 4mm;
+
+  --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans KR',
+    'Apple SD Gothic Neo', 'Malgun Gothic', 'Helvetica Neue', Arial, sans-serif;
+}
+
 body {
+  font-family: 'Pretendard', sans-serif;
   margin: 0;
-  font-family: var(--font-body);
-  color: #111;
-  font-size: 12px;
+  padding: 20px;
+  background: #eee;
 }
 
 ul {
@@ -12,11 +36,13 @@ ul {
 }
 
 .page {
-  padding: var(--space-5);
-  flex-direction: column;
-  display: flex;
-  flex-direction: column;
-  gap: 44px;
+  width: 210mm; /* A4 기준 */
+  min-height: 297mm;
+  background: var(--color-white);
+  margin: 0 auto;
+  padding: 20px 30px;
+  position: relative;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 /* Utilities */
@@ -26,115 +52,34 @@ ul {
 .text-center {
   text-align: center;
 }
-.muted {
-  font-size: 14px;
-  line-height: 1.5;
-}
 
-/* Section title */
+/* Section */
 section {
   display: flex;
   flex-direction: column;
-  gap: 28px;
-}
-.section-title {
-  font-weight: 700;
   color: var(--color-primary);
-  font-size: 30px;
 }
 
-/* Header summary */
-.header-summary {
-  display: flex;
-  height: 160px;
-  align-items: stretch;
-  gap: 24px;
-}
-.summary-kpi-group {
-  flex: 1 1 50%;
-  display: flex;
-  flex-direction: column;
-  gap: 24px; /* KPI gap */
-}
-.kpi {
-  background: var(--color-primary);
-  color: #fff;
-  padding: var(--space-3);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-weight: 800;
-  height: 68px;
-  box-sizing: border-box;
-}
-.kpi {
+.section-title {
+  font-weight: 600;
+  color: var(--color-primary);
   font-size: 24px;
+  height: 28px;
+  display: flex;
+  margin-bottom: 16px;
 }
-.kpi .value .num-lg {
-  font-size: 34px;
+.section-title::before {
+  content: '';
+  display: inline-block;
+  width: 3px;
+  height: 28px;
+  background: var(--color-primary);
   margin-right: 8px;
 }
 
-.insurance-type-summary {
-  border: 2px solid var(--color-primary);
-  border-radius: var(--radius-md);
-  padding: var(--space-3);
-  background: #fff;
-  flex: 1 1 50%;
+/* Header */
+.header {
   display: flex;
-}
-
-/* Tables */
-.table {
-  width: 100%;
-  border-collapse: collapse;
-  table-layout: fixed;
-}
-.table th,
-.table td {
-  border: 1px solid var(--color-line);
-  padding: 6px;
-  vertical-align: middle;
-}
-.table thead th {
-  background: var(--color-primary);
-  color: #fff;
-  font-weight: 700;
-}
-.table.zebra tbody tr:nth-child(odd) td {
-  background: var(--color-zebra);
-}
-.table .narrow {
-  width: 8%;
-}
-.table .wide {
-  width: 24%;
-}
-
-/* template-01-guarantee-overview */
-.table.clean th,
-.table.clean td {
-  border: none;
-}
-.num-lg {
-  font-size: 18px;
-  font-weight: 800;
-}
-
-/* Table column backgrounds to match visual spec */
-.bg-dambo {
-  background: var(--color-zebra);
-}
-.bg-total {
-  background: #fff7cf;
-}
-.sideband {
-  background: var(--color-secondary);
-  color: #fff;
-  text-align: center;
-  font-weight: 700;
-}
-.vertical-text {
-  writing-mode: vertical-rl;
-  transform: rotate(180deg);
+  flex-direction: column;
+  gap: 28px;
 }

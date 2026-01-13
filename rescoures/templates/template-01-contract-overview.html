@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>보유 계약 현황 리포트</title>
+    <link rel="stylesheet" href="../styles/tokens.css" />
+    <link rel="stylesheet" href="../styles/components.css" />
+    <style>
+      /* 상단 요약 영역 */
+      .header-summary {
+        display: flex;
+        position: absolute;
+        align-items: center;
+        background: var(--color-primary);
+        color: var(--color-white);
+        padding: 12px 30px;
+        width: calc(100% - 60px);
+        left: 0;
+        top: 0;
+      }
+
+      .header-summary .title {
+        font-size: 20px;
+        font-weight: 600;
+        color: var(--color-secondary);
+      }
+      .header-summary .title span {
+        font-size: 14px;
+      }
+      .header-summary .summary-grid {
+        position: absolute;
+        background: var(--color-primary);
+        width: 35%;
+        height: 112px;
+        top: 0;
+        right: 0;
+        border-radius: 0 0 0 32px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 24px 30px;
+      }
+
+      .summary-item {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-weight: 700;
+      }
+
+      .summary-item .label {
+        font-size: 12px;
+      }
+      .summary-item .value {
+        font-size: 18px;
+      }
+      .summary-item .value span {
+        font-size: 12px;
+      }
+
+      .contract-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+        table-layout: fixed;
+      }
+
+      .contract-table thead {
+        background: var(--color-primary-op8);
+      }
+      .contract-table thead th {
+        color: var(--color-white);
+        padding: 12px 8px;
+        font-weight: 600;
+        border: none;
+      }
+
+      .contract-table tbody td {
+        padding: 14px 8px;
+        text-align: center;
+        height: 20px; /* 높이 고정 */
+      }
+
+      /* Zebra Stripe 효과: 스크린샷과 동일하게 짝수행 배경색 */
+      .contract-table tbody tr:nth-child(even) td {
+        background-color: var(--color-primary-op1);
+      }
+
+      /* 특정 컬럼 스타일링 */
+      .col-product {
+        text-align: left !important;
+        padding-left: 15px !important;
+      }
+      .col-premium {
+        text-align: right !important;
+        padding-right: 15px !important;
+        font-weight: 700;
+        color: var(--color-primary);
+      }
+      .col-dates {
+        font-size: 12px;
+        letter-spacing: -0.5px;
+      }
+
+      /* 빈 데이터 행 스타일 */
+      .row-empty td {
+        color: transparent;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page" id="report-page">
+      <header class="header-summary">
+        <div class="title">김땡땡&nbsp;<span>님</span> &nbsp;&nbsp;Insurance Portfolio</div>
+        <div class="summary-grid">
+          <div class="summary-item">
+            <div class="label">월 보험료 합계</div>
+            <div class="value">50,000&nbsp;<span>원</span></div>
+          </div>
+          <div class="summary-item">
+            <div class="label">계약 건수</div>
+            <div class="value">2&nbsp;<span>건</span></div>
+          </div>
+        </div>
+      </header>
+
+      <section style="margin-top: 40px">
+        <h2 class="section-title">보유 계약 현황</h2>
+        <table class="contract-table">
+          <thead>
+            <tr>
+              <th style="width: 5%">#</th>
+              <th style="width: 12%">회사명</th>
+              <th style="width: 30%">상품명</th>
+              <th style="width: 20%">계약일/만기일</th>
+              <th style="width: 10%">납입<br />주기</th>
+              <th style="width: 10%">납입<br />기간</th>
+              <th style="width: 13%">월 보험료</th>
+            </tr>
+          </thead>
+          <tbody id="contract-list"></tbody>
+        </table>
+      </section>
+    </div>
+
+    <script>
+      const renderContracts = () => {
+        const tableBody = document.getElementById('contract-list');
+        const MAX_ROWS = 20;
+
+        const rawData = [
+          {
+            index: 1,
+            company_name: '롯데손보',
+            product_name: '무배당 let:drive 운전자보험(2211)',
+            contract_start_date: '2022.11.16',
+            contract_end_date: '2042.11.16',
+            payment_cycle: '월납',
+            payment_term: 20, // number
+            monthly_premium: 25000, // number
+          },
+          {
+            index: 2,
+            company_name: '롯데손보',
+            product_name: '무배당 let:drive 운전자보험(2211)',
+            contract_start_date: '2022.11.16',
+            contract_end_date: '2042.11.16',
+            payment_cycle: '월납',
+            payment_term: 20,
+            monthly_premium: 25000,
+          },
+        ];
+
+        // 숫자 포맷팅 함수 (25000 -> 25,000)
+        const formatNumber = (num) => (num ? num.toLocaleString() : '');
+
+        const createRowHtml = (data, i) => {
+          // 데이터가 없는 빈 행 처리
+          if (!data) {
+            return `<tr class="row-empty"><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>`;
+          }
+
+          // 데이터가 있는 행 처리 (필드명 매칭)
+          return `
+        <tr>
+          <td>${data.index}</td>
+          <td>${data.company_name}</td>
+          <td class="col-product">${data.product_name}</td>
+          <td class="col-dates">${data.contract_start_date} ~ ${data.contract_end_date}</td>
+          <td>${data.payment_cycle}</td>
+          <td>${data.payment_term}년</td>
+          <td class="col-premium">${formatNumber(data.monthly_premium)}원</td>
+        </tr>
+      `;
+        };
+
+        // 전체 행 생성 및 삽입
+        const rowsHtml = Array.from({ length: MAX_ROWS }, (_, i) =>
+          createRowHtml(rawData[i], i)
+        ).join('');
+
+        tableBody.innerHTML = rowsHtml;
+      };
+
+      document.addEventListener('DOMContentLoaded', renderContracts);
+    </script>
+  </body>
+</html>
