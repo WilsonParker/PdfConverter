@@ -3,7 +3,8 @@
   --color-primary-op1: rgba(53, 76, 156, 0.1);
   --color-primary-op5: rgba(53, 76, 156, 0.5);
   --color-primary-op8: rgba(53, 76, 156, 0.8);
-  --color-secondary: #fff7bd;
+  --color-secondary: #fff5a7;
+  --color-secondary-op5: rgba(255, 247, 180, 0.5);
   --color-white: #fff;
 
   --space-1: 2mm;
@@ -39,6 +40,7 @@ ul {
   width: 210mm; /* A4 기준 */
   min-height: 297mm;
   background: var(--color-white);
+  color: var(--color-primary);
   margin: 0 auto;
   padding: 20px 30px;
   position: relative;

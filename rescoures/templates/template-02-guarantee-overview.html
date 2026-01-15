@@ -3,9 +3,329 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Template 02. 전체 보장 현황</title>
+    <title>Template 02. 보장 현황</title>
+    <link rel="stylesheet" href="../styles/tokens.css" />
+    <link rel="stylesheet" href="../styles/components.css" />
+    <style>
+      :root {
+        --color-primary: #3b4b9d;
+        --color-header-navy: #5d6db1;
+        --color-bg-light-blue: #f8f9ff;
+        --color-bg-yellow: #fffde8;
+        --color-line: #d1d9e8;
+        --row-height: 28px;
+      }
+
+      /* 기본 레이아웃 유지 */
+      .guarantee-container {
+        display: flex;
+        width: 100%;
+        border-top: 2px solid var(--color-primary);
+        align-items: flex-start;
+      }
+      .sidebar-fixed {
+        width: 280px;
+        flex-shrink: 0;
+        border-right: 2px solid var(--color-primary);
+      }
+      .content-dynamic {
+        flex: 1;
+        overflow-x: hidden;
+      } /* 가로스크롤 방지 및 정렬 */
+
+      /* 헤더 요약 박스 */
+      .header-summary-box {
+        background: var(--color-primary); /* 배경 남색 */
+        padding: 18px;
+        height: 150px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-sizing: border-box;
+      }
+
+      .summary-inner {
+        background: #fff;
+        width: 100%;
+        height: 100%;
+        padding: 0 20px; /* 좌우 여백 */
+        display: flex;
+        flex-direction: column;
+        justify-content: center; /* 수직 중앙 정렬 */
+        border-radius: 0; /* 이미지상 직각 처리 */
+        box-sizing: border-box;
+      }
+
+      .summary-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline; /* 텍스트 하단 기준 맞춤 */
+        width: 100%;
+      }
+
+      /* 중앙 가로 구분선 */
+      .summary-divider {
+        border-top: 1px solid var(--color-primary); /* 남색 실선 */
+        margin: 12px 0; /* 선 위아래 간격 */
+        width: 100%;
+      }
+
+      .summary-item .label {
+        font-size: 14px;
+        font-weight: 800; /* 매우 굵게 */
+        color: var(--color-primary);
+        letter-spacing: -0.5px;
+      }
+
+      .summary-item .value {
+        font-size: 15px;
+        font-weight: 700; /* 숫자 강조 */
+        color: var(--color-primary);
+        text-align: right;
+      }
+
+      /* 테이블 설정 (table-layout: fixed 필수) */
+      .guarantee-table {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+      }
+      .guarantee-table tr {
+        height: var(--row-height);
+      }
+      .guarantee-table td {
+        border-bottom: 1px solid var(--color-line);
+        border-right: 1px solid var(--color-line);
+        vertical-align: middle;
+        font-size: 11px;
+        box-sizing: border-box;
+      }
+
+      .row-group-end td {
+        border-bottom: 1.5px solid var(--color-primary) !important;
+      }
+      .col-group {
+        background: rgba(59, 75, 157, 0.05);
+        text-align: center;
+        font-weight: 800;
+        border-bottom: 1.5px solid var(--color-primary) !important;
+      }
+      .col-name {
+        padding-left: 10px;
+        font-weight: 600;
+      }
+      .col-total {
+        background: var(--color-bg-yellow);
+        text-align: right;
+        padding-right: 10px;
+        font-weight: 800;
+      }
+
+      /* 우측 동적 영역 */
+      .contract-header-row {
+        display: flex;
+        height: 150px;
+      }
+      .contract-col {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        border-right: 1px solid var(--color-line);
+        text-align: center;
+        overflow: hidden;
+      }
+      .col-prod {
+        background: var(--color-header-navy);
+        color: #fff;
+        height: 45px;
+        font-size: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 5px;
+        font-weight: 700;
+        line-height: 1.2;
+      }
+      .col-premium {
+        background: var(--color-bg-light-blue);
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        font-weight: 800;
+      }
+
+      .cell-amt {
+        text-align: right;
+        padding-right: 10px;
+        font-weight: 700;
+      }
+      .cell-dash {
+        text-align: center;
+      }
+    </style>
   </head>
   <body>
-    <div class="page" id="template-02-guarantee-overview"></div>
+    <div class="page" id="template-02-guarantee-overview">
+      <div class="guarantee-container">
+        <div class="sidebar-fixed">
+          <div class="header-summary-box">
+            <div class="summary-inner">
+              <div class="summary-item" style="margin-bottom: 10px">
+                <span class="label">보험 계약</span>
+                <span class="value" style="float: right"
+                  >10<small style="font-size: 12px; color: #333"> 건</small></span
+                >
+              </div>
+              <div style="border-top: 1px solid #eee; padding-top: 10px" class="summary-item">
+                <span class="label">월 보험료 합계</span>
+                <span class="value" style="display: block; text-align: right"
+                  >485,022<small style="font-size: 12px; color: #333"> 원</small></span
+                >
+              </div>
+            </div>
+          </div>
+          <table class="guarantee-table">
+            <colgroup>
+              <col style="width: 70px" />
+              <col style="width: 120px" />
+              <col style="width: 90px" />
+            </colgroup>
+            <tbody id="fixed-sidebar-body"></tbody>
+          </table>
+        </div>
+
+        <div class="content-dynamic">
+          <div class="contract-header-row" id="dynamic-header-row"></div>
+          <table class="guarantee-table" id="dynamic-table-root">
+            <tbody id="dynamic-content-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const renderTemplate = () => {
+        // 1. 계약 데이터 (4개 고정)
+        const contracts = Array(4).fill({
+          company: '롯데손보',
+          product: '무배당 let:drive\n운전자보험(2211)',
+          meta: '20년납/70세 만기',
+          date: '2022.11.16 ~ 2042.11.16',
+          premium: '25,000원',
+        });
+
+        // 2. 보장 데이터 구조
+        // 사망장해만 데이터가 있고 나머지는 빈 배열/문자로 처리
+        const guaranteeData = [
+          {
+            groupName: '사망\n장해',
+            items: [
+              {
+                name: '상해사망',
+                total: '11억 6000만',
+                values: ['1억 5000만', '1억 5000만', '-', '-'],
+              },
+              {
+                name: '상해사망',
+                total: '11억 6000만',
+                values: ['1억 5000만', '1억 5000만', '-', '-'],
+              },
+              {
+                name: '상해사망',
+                total: '11억 6000만',
+                values: ['1억 5000만', '1억 5000만', '-', '-'],
+              },
+              {
+                name: '상해사망',
+                total: '11억 6000만',
+                values: ['1억 5000만', '1억 5000만', '-', '-'],
+              },
+              {
+                name: '상해사망',
+                total: '11억 6000만',
+                values: ['1억 5000만', '1억 5000만', '-', '-'],
+              },
+            ],
+          },
+          // 나머지 8개 그룹은 빈 칸으로 생성 (총 9개 그룹 맞춤)
+          ...Array(6).fill({ groupName: '', items: [] }),
+        ];
+
+        let fixedHtml = '';
+        let dynamicHtml = '';
+
+        guaranteeData.forEach((group) => {
+          // 데이터가 없는 빈 그룹이어도 5행을 생성
+          const rowCount = 5;
+
+          for (let i = 0; i < rowCount; i++) {
+            const item = group.items[i] || {
+              name: '',
+              total: '',
+              values: Array(contracts.length).fill(''),
+            };
+            const isGroupFirst = i === 0;
+            const isGroupLast = i === rowCount - 1;
+            const rowClass = isGroupLast ? 'row-group-end' : '';
+
+            // 좌측 HTML
+            fixedHtml += `
+              <tr class="${rowClass}">
+                ${
+                  isGroupFirst
+                    ? `<td class="col-group" rowspan="${rowCount}">${group.groupName.replace(
+                        '\n',
+                        '<br>'
+                      )}</td>`
+                    : ''
+                }
+                <td class="col-name">${item.name}</td>
+                <td class="col-total">${item.total}</td>
+              </tr>`;
+
+            // 우측 HTML (계약 개수에 맞춰 생성)
+            dynamicHtml += `<tr class="${rowClass}">`;
+            item.values.forEach((val) => {
+              dynamicHtml += `<td class="cell-amt">${val}</td>`;
+            });
+            dynamicHtml += `</tr>`;
+          }
+        });
+
+        // 3. 렌더링 실행
+        document.getElementById('fixed-sidebar-body').innerHTML = fixedHtml;
+        document.getElementById('dynamic-content-body').innerHTML = dynamicHtml;
+
+        // 우측 헤더 렌더링
+        document.getElementById('dynamic-header-row').innerHTML = contracts
+          .map(
+            (c) => `
+          <div class="contract-col">
+            <div style="font-size:10px; padding:5px; color:#666;">${c.company}</div>
+            <div class="col-prod">${c.product.replace('\n', '<br>')}</div>
+            <div style="font-size:10px; border-bottom:1px solid #eee; padding:2px 0;">${
+              c.meta
+            }</div>
+            <div style="font-size:9px; color:#3b4b9d; padding:4px 0;">${c.date}</div>
+            <div class="col-premium">${c.premium}</div>
+          </div>
+        `
+          )
+          .join('');
+
+        // 4. 너비 정렬 핵심: 우측 테이블에 colgroup 삽입 (계약 개수 비례)
+        const colWidth = 100 / contracts.length;
+        const colGroupHtml = `<colgroup>${contracts
+          .map(() => `<col style="width: ${colWidth}%">`)
+          .join('')}</colgroup>`;
+        document
+          .getElementById('dynamic-table-root')
+          .insertAdjacentHTML('afterbegin', colGroupHtml);
+      };
+
+      renderTemplate();
+    </script>
   </body>
 </html>
