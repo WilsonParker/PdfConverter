@@ -114,15 +114,17 @@
   <body>
     <div class="page" id="report-page">
       <header class="header-summary">
-        <div class="title">김땡땡&nbsp;<span>님</span> &nbsp;&nbsp;Insurance Portfolio</div>
+        <div class="title">
+          김땡땡&nbsp;<span>님</span> &nbsp;&nbsp;Insurance Portfolio
+        </div>
         <div class="summary-grid">
           <div class="summary-item">
             <div class="label">월 보험료 합계</div>
-            <div class="value">50,000&nbsp;<span>원</span></div>
+            <div class="value">100,000&nbsp;<span>원</span></div>
           </div>
           <div class="summary-item">
-            <div class="label">계약 건수</div>
-            <div class="value">2&nbsp;<span>건</span></div>
+            <div class="label">보험 계약(정상)수</div>
+            <div class="value">1&nbsp;<span>건</span></div>
           </div>
         </div>
       </header>
@@ -148,34 +150,34 @@
 
     <script>
       const renderContracts = () => {
-        const tableBody = document.getElementById('contract-list');
+        const tableBody = document.getElementById("contract-list");
         const MAX_ROWS = 20;
 
         const rawData = [
           {
             index: 1,
-            company_name: '롯데손보',
-            product_name: '무배당 let:drive 운전자보험(2211)',
-            contract_start_date: '2022.11.16',
-            contract_end_date: '2042.11.16',
-            payment_cycle: '월납',
+            company_name: "롯데손보",
+            product_name: "무배당 let:drive 운전자보험(2211)",
+            contract_start_date: "2022.11.16",
+            contract_end_date: "2042.11.16",
+            payment_cycle: "월납",
             payment_term: 20, // number
             monthly_premium: 25000, // number
           },
           {
             index: 2,
-            company_name: '롯데손보',
-            product_name: '무배당 let:drive 운전자보험(2211)',
-            contract_start_date: '2022.11.16',
-            contract_end_date: '2042.11.16',
-            payment_cycle: '월납',
+            company_name: "롯데손보",
+            product_name: "무배당 let:drive 운전자보험(2211)",
+            contract_start_date: "2022.11.16",
+            contract_end_date: "2042.11.16",
+            payment_cycle: "월납",
             payment_term: 20,
             monthly_premium: 25000,
           },
         ];
 
         // 숫자 포맷팅 함수 (25000 -> 25,000)
-        const formatNumber = (num) => (num ? num.toLocaleString() : '');
+        const formatNumber = (num) => (num ? num.toLocaleString() : "");
 
         const createRowHtml = (data, i) => {
           // 데이터가 없는 빈 행 처리
@@ -189,7 +191,9 @@
           <td>${data.index}</td>
           <td>${data.company_name}</td>
           <td class="col-product">${data.product_name}</td>
-          <td class="col-dates">${data.contract_start_date} ~ ${data.contract_end_date}</td>
+          <td class="col-dates">${data.contract_start_date} ~ ${
+            data.contract_end_date
+          }</td>
           <td>${data.payment_cycle}</td>
           <td>${data.payment_term}년</td>
           <td class="col-premium">${formatNumber(data.monthly_premium)}원</td>
@@ -200,12 +204,12 @@
         // 전체 행 생성 및 삽입
         const rowsHtml = Array.from({ length: MAX_ROWS }, (_, i) =>
           createRowHtml(rawData[i], i)
-        ).join('');
+        ).join("");
 
         tableBody.innerHTML = rowsHtml;
       };
 
-      document.addEventListener('DOMContentLoaded', renderContracts);
+      document.addEventListener("DOMContentLoaded", renderContracts);
     </script>
   </body>
 </html>
