@@ -4,8 +4,204 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Template 03. 보장 내역 현황</title>
+    <link rel="stylesheet" href="../styles/tokens.css" />
+    <link rel="stylesheet" href="../styles/components.css" />
+    <style>
+      /* 상세 보장 내역 전용 테이블 스타일 */
+      .details-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 11px;
+        table-layout: fixed;
+        /* 최상단 메인 라인 */
+        border-top: 1.5px solid var(--color-primary);
+      }
+
+      .details-table thead th {
+        background: var(--color-primary-op8);
+        color: var(--color-white);
+        padding: 10px 4px;
+        font-weight: 600;
+        border-right: 1px solid rgba(255, 255, 255, 0.2);
+        text-align: center;
+      }
+
+      .details-table thead th:last-child {
+        border-right: none;
+      }
+
+      .details-table tbody td {
+        padding: 4px 8px;
+        height: 28px; /* 모든 행의 고정 높이 */
+        border-right: 1px solid var(--color-primary-op5);
+        vertical-align: middle;
+        box-sizing: border-box;
+        border-bottom: none; /* 기본 바닥선 제거하여 묶음 처리 준비 */
+        border-bottom: 1px solid var(--color-primary-op5) !important;
+      }
+
+      .details-table tbody td:last-child {
+        border-right: none;
+      }
+
+      /* 표준담보명 컬럼 배경색 고정 (데이터 유무 상관없음) */
+      .col-standard {
+        background-color: var(--color-primary-op1);
+        color: var(--color-primary);
+        font-weight: 700;
+        text-align: center;
+        line-height: 1.2;
+        font-size: 13px;
+      }
+
+      /* 새로운 그룹이 시작되는 행의 상단 라인 */
+      .group-start td {
+        border-top: 1px solid var(--color-primary-op5) !important; /* 진한 구분선 */
+      }
+
+      /* 동일 그룹 내 항목 구분 상단 라인 */
+      .border-top td {
+        border-top: 1px solid var(--color-primary-op5) !important; /* 연한 구분선 */
+      }
+
+      /* 금액 컬럼 강조 */
+      .col-amount {
+        text-align: right;
+        font-weight: 700;
+      }
+
+      /* 날짜/기간 컬럼 */
+      .col-period {
+        text-align: center;
+        font-size: 10px;
+      }
+
+      .row-empty td {
+        border-top: 1px solid var(--color-primary-op5) !important;
+        color: transparent;
+      }
+
+      /* 빈 행의 첫번째 칸 배경색 강제 적용 */
+      .row-empty td.col-standard {
+        background-color: var(--color-primary-op1) !important;
+      }
+
+      .text-center {
+        text-align: center;
+      }
+    </style>
   </head>
   <body>
-    <div class="page" id="template-03-guarantee-details"></div>
+    <div class="page" id="template-03-guarantee-details">
+      <section>
+        <div class="section-title">보장내역 현황</div>
+
+        <table class="details-table">
+          <thead>
+            <tr>
+              <th style="width: 10%">표준담보명</th>
+              <th style="width: 10%">회사명</th>
+              <th style="width: 30%">상품명</th>
+              <th style="width: 30%">회사담보명</th>
+              <th style="width: 8%">가입금액</th>
+              <th style="width: 20%">보험기간</th>
+            </tr>
+          </thead>
+          <tbody id="details-list"></tbody>
+        </table>
+      </section>
+    </div>
+
+    <script>
+      const renderDetails = () => {
+        const tableBody = document.getElementById("details-list");
+        const MAX_ROWS = 37; // A4 페이지 기준 적정 행 수
+
+        // 렌더링용 예시 데이터 구조
+        const rawData = [
+          {
+            standard_name: "상해\n사망",
+            company_name: "흥국화재",
+            product_name: "무배당 THE간편한건강보험(갱신형)",
+            company_guarantee: "일반상해사망",
+            amount: "1억",
+            period: "2012-11-23 ~ 2072-11-23",
+            rowSpan: 3, // 표준담보명 3행 묶음
+            companyRowSpan: 2, // 회사명 2행 묶음
+            borderType: "group", // 새 그룹 시작 (진한 선)
+          },
+          {
+            isStandardSub: true, // 표준담보 셀 생략
+            isCompanySub: true, // 회사명 셀 생략
+            product_name: "무배당 행복을 주는 가족사랑보험 플러스(1210)",
+            company_guarantee: "일반상해사망",
+            amount: "1억",
+            period: "2012-11-23 ~ 2072-11-23",
+            borderType: "item", // 항목 구분 (연한 선)
+          },
+          {
+            isStandardSub: true,
+            company_name: "삼성화재",
+            product_name: "다이렉트 개인용 자동차보험",
+            company_guarantee: "자기신체사고사망",
+            amount: "5,000만",
+            period: "2023-01-01 ~ 2024-01-01",
+            borderType: "item",
+          },
+        ];
+
+        let html = "";
+        for (let i = 0; i < MAX_ROWS; i++) {
+          const data = rawData[i];
+
+          if (data) {
+            // borderType에 따라 클래스 부여
+            const rowClass =
+              data.borderType === "group"
+                ? "group-start"
+                : data.borderType === "item"
+                ? "border-top"
+                : "";
+
+            html += `<tr class="${rowClass}">`;
+
+            // 1. 표준담보명 셀 (rowspan 적용)
+            if (!data.isStandardSub) {
+              html += `<td class="col-standard" rowspan="${
+                data.rowSpan || 1
+              }">${data.standard_name.replace("\n", "<br>")}</td>`;
+            }
+
+            // 2. 회사명 셀 (rowspan 적용)
+            if (!data.isCompanySub) {
+              html += `<td class="col-company text-center" rowspan="${
+                data.companyRowSpan || 1
+              }">${data.company_name}</td>`;
+            }
+
+            html += `
+                <td>${data.product_name}</td>
+                <td>${data.company_guarantee}</td>
+                <td class="col-amount">${data.amount}</td>
+                <td class="col-period">${data.period}</td>
+              </tr>`;
+          } else {
+            // 빈 행: 배경색 유지를 위해 col-standard 클래스 포함
+            html += `
+              <tr class="row-empty">
+                <td class="col-standard"></td>
+                <td class="text-center"></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+              </tr>`;
+          }
+        }
+        tableBody.innerHTML = html;
+      };
+
+      document.addEventListener("DOMContentLoaded", renderDetails);
+    </script>
   </body>
 </html>
