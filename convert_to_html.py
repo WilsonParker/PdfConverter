@@ -1,13 +1,13 @@
 import pdfplumber
 
-from src.Pages.Page1 import Page1
 from src.Pages.Page2 import Page2
+from src.Pages.Page1 import Page1
 from src.Utils.FileUtil import FileUtil
 
 fileUtil = FileUtil()
 
 composites = [
-    Page1(),
+    # Page1(),
     Page2(),
 ]
 

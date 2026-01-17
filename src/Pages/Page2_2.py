@@ -7,7 +7,7 @@ from .BasePage import BasePage
 class Page2(BasePage):
 
     def getKey(self) -> str:
-        return "page2"
+        return "page2_2"
 
     def isCorrect(self, page) -> bool:
         # 텍스트 추출 (가장 일반적)
