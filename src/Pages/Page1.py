@@ -43,7 +43,7 @@ class Page1(BasePage):
             # 계약 시작일
             "contract_start_date": row[3],
             # 계약 만료일
-            "contract_end_date": row[3],
+            "contract_end_date": self.dateUtil.addYearsToDate(row[3], row[5]),
             # 납입 주기
             "payment_cycle": row[4],
             # 납입 기간

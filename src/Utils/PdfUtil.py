@@ -1,10 +1,10 @@
 import json
-from typing import Any
-
 import pdfplumber
-from jinja2 import Template
-from playwright.sync_api import sync_playwright
 
+from typing import Any
+from jinja2 import Template
+# 설치: pip install playwright && playwright install chromium
+from playwright.sync_api import sync_playwright
 from src.Pages.Page1 import Page1
 from src.Utils.FileUtil import FileUtil
 

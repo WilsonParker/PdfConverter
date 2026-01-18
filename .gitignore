@@ -1,4 +1,4 @@
 .venv
 .idea
-input
-ouptut
+input/*
+ouptut/*

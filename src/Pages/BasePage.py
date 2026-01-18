@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Any
 
+from src.Utils.DateUtil import DateUtil
 from src.Utils.FileUtil import FileUtil
 from src.Utils.StringUtil import StringUtil
 
@@ -10,6 +11,7 @@ class BasePage(ABC):
         super().__init__()
         self.fileUtil = FileUtil()
         self.stringUtil = StringUtil()
+        self.dateUtil = DateUtil()
 
     # 페이지를 구분할 key
     @abstractmethod
