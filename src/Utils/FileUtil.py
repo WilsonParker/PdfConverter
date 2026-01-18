@@ -1,3 +1,4 @@
+import os
 import pathlib
 from pathlib import Path
 
@@ -22,6 +23,11 @@ class FileUtil:
                 raise RuntimeError(path + "이 폴더에서 PDF 파일을 찾을 수 없습니다.")
             else:
                 return pdfFiles
+
+    # 경로에서 확장자 포함 파일명만 추출 (예: test.pdf)
+    def getFileName(self, path: str) -> str:
+        # 경로에서 확장자 포함 파일명만 추출 (예: test.pdf)
+        return os.path.basename(path)
 
     # 탬플릿 경로를 반환 합니다
     def getTemplatePath(self) -> str:
