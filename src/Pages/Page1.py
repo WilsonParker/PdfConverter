@@ -13,7 +13,7 @@ class Page1(BasePage):
         lines = page.extract_text().splitlines()
         return "님의 전체 계약리스트" in lines[0].strip() if lines else ""
 
-    def extract(self, page) -> dict:
+    def extract(self, page, pdfData: dict) -> dict:
         words = self.convertWords(page)
         # self.printWords(words)
 
@@ -28,7 +28,7 @@ class Page1(BasePage):
                 cleanRow = [str(cell).replace('\n', ' ') if cell else "" for cell in row]
                 tables.append(self.appendTable(cleanRow))
 
-        extractedData = self.baseDataPage1And2(words)
+        extractedData = self.buildBaseData(words)
 
         extractedData["tables"] = tables
         # print(extractedData)

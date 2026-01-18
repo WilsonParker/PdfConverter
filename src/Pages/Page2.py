@@ -15,11 +15,11 @@ class Page2(BasePage):
         lines = page.extract_text().splitlines()
         return "님의 전체 보장현황" in lines[0].strip() if lines else ""
 
-    def extract(self, page) -> dict:
+    def extract(self, page, pdfData: dict) -> dict:
         words = self.convertWords(page)
         # self.printWords(words)
 
-        extractedData = self.baseDataPage1And2(words)
+        extractedData = self.buildBaseData(words)
         table = []
 
         # 유형 1의 페이지일 경우
