@@ -11,6 +11,7 @@
 ### Install packages
 ```shell
  pip install -r requirements.txt
+ playwright install chromium
 ```
 
 ### Run

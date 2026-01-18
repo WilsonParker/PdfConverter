@@ -22,3 +22,31 @@ class FileUtil:
                 raise RuntimeError(path + "이 폴더에서 PDF 파일을 찾을 수 없습니다.")
             else:
                 return pdfFiles
+
+    # 탬플릿 경로를 반환 합니다
+    def getTemplatePath(self) -> str:
+        return "resources/templates"
+
+    # 스타일 경로를 반환 합니다
+    def getStylePath(self) -> str:
+        return "resources/styles"
+
+    # 입력 경로를 반환 합니다
+    def getInputPath(self) -> str:
+        return "input"
+
+    # 출력 경로를 반환 합니다
+    def getOutputPath(self) -> str:
+        return "output"
+
+    # 프로젝트 루트 경로를 반환 합니다
+    def getRootPath(self) -> Path:
+        # 현재 파일(PdfUtil.py)의 위치
+        current_file = Path(__file__).resolve()
+
+        # 프로젝트 루트(PdfConverter/)로 이동
+        return current_file.parent.parent.parent
+
+    # 주어진 상대 경로를 절대 경로로 변환 합니다
+    def getAbsolutePath(self, relativePath: str) -> Path:
+        return self.getRootPath() / relativePath

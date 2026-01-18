@@ -3,3 +3,4 @@ pathlib
 pdfplumber
 jinja2
 json
+playwright
