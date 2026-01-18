@@ -9,6 +9,7 @@ try:
         data = pdfUtil.convertPdfToData(pdfPath)
         htmlStr = pdfUtil.convertDataToHtml(data)
         pdfUtil.convertStrHtmlToPdf(htmlStr, fileUtil.getFileName(pdfPath))
+        break
 except FileNotFoundError:
     raise RuntimeError(f"오류: '{pdfPath}' 파일을 찾을 수 없습니다. 경로를 확인해주세요.")
 except Exception as e:

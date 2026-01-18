@@ -1,5 +1,3 @@
-import re
-
 from .BasePage import BasePage
 
 
@@ -22,68 +20,69 @@ class Page2(BasePage):
         # self.printWords(words)
 
         extractedData = self.baseDataPage1And2(words)
-        table = {}
+        table = []
 
         # 유형 1의 페이지일 경우
         if "상해사망" in words[17]:
-            table = {
-                "사망장해": [
-                    self.appendTableUsingWord(words, 17),
-                    self.appendTableUsingWord(words, 23),
-                    self.appendTableUsingWord(words, 31),
-                    self.appendTableUsingWord(words, 37),
-                ],
-                "치매간병": [
-                    self.appendTableUsingWord(words, 43),
-                    self.appendTableUsingWord(words, 49),
-                    self.appendTableUsingWord(words, 57),
-                    self.appendTableUsingWord(words, 63),
-                ],
-                "암 진단": [
-                    self.appendTableUsingWord(words, 69),
-                    self.appendTableUsingWord(words, 75),
-                    self.appendTableUsingWord(words, 83),
-                    self.appendTableUsingWord(words, 89),
-                ],
-                "뇌/심장 진단": [
-                    self.appendTableUsingWord(words, 95),
-                    self.appendTableUsingWord(words, 101),
-                    self.appendTableUsingWord(words, 108),
-                    self.appendTableUsingWord(words, 115),
-                    self.appendTableUsingWord(words, 121),
-                ],
-            }
+            table.append(self.bulidTableGroup("사망장해", [
+                self.buildTableUsingWord(words, 17),
+                self.buildTableUsingWord(words, 23),
+                self.buildTableUsingWord(words, 31),
+                self.buildTableUsingWord(words, 37),
+            ]))
+
+            table.append(self.bulidTableGroup("치매간병", [
+                self.buildTableUsingWord(words, 43),
+                self.buildTableUsingWord(words, 49),
+                self.buildTableUsingWord(words, 57),
+                self.buildTableUsingWord(words, 63),
+            ]))
+
+            table.append(self.bulidTableGroup("암 진단", [
+                self.buildTableUsingWord(words, 69),
+                self.buildTableUsingWord(words, 75),
+                self.buildTableUsingWord(words, 83),
+                self.buildTableUsingWord(words, 89),
+            ]))
+
+            table.append(self.bulidTableGroup("뇌/심장 진단", [
+                self.buildTableUsingWord(words, 95),
+                self.buildTableUsingWord(words, 101),
+                self.buildTableUsingWord(words, 108),
+                self.buildTableUsingWord(words, 115),
+                self.buildTableUsingWord(words, 121),
+            ]))
 
         # 유형 2의 페이지일 경우
         if "상해입원의료비" in words[17]:
-            table = {
-                "실손의료비": [
-                    self.appendTableUsingWord(words, 17),
-                    self.appendTableUsingWord(words, 23),
-                    self.appendTableUsingWord(words, 30),
-                    self.appendTableUsingWord(words, 37),
-                    self.appendTableUsingWord(words, 43),
-                ],
-                "수술입원": [
-                    self.appendTableUsingWord(words, 49),
-                    self.appendTableUsingWord(words, 55),
-                    self.appendTableUsingWord(words, 61),
-                    self.appendTableUsingWord(words, 68),
-                    self.appendTableUsingWord(words, 75),
-                    self.appendTableUsingWord(words, 81),
-                    self.appendTableUsingWord(words, 87),
-                ],
-                "운전자 기타": [
-                    self.appendTableUsingWord(words, 93),
-                    self.appendTableUsingWord(words, 99),
-                    self.appendTableUsingWord(words, 105),
-                    self.appendTableUsingWord(words, 111),
-                    self.appendTableUsingWord(words, 119),
-                    self.appendTableUsingWord(words, 125),
-                    self.appendTableUsingWord(words, 131),
-                    self.appendTableUsingWord(words, 137),
-                ],
-            }
+            table.append(self.bulidTableGroup("실손의료비", [
+                self.buildTableUsingWord(words, 17),
+                self.buildTableUsingWord(words, 23),
+                self.buildTableUsingWord(words, 30),
+                self.buildTableUsingWord(words, 37),
+                self.buildTableUsingWord(words, 43),
+            ]))
+
+            table.append(self.bulidTableGroup("수술입원", [
+                self.buildTableUsingWord(words, 49),
+                self.buildTableUsingWord(words, 55),
+                self.buildTableUsingWord(words, 61),
+                self.buildTableUsingWord(words, 68),
+                self.buildTableUsingWord(words, 75),
+                self.buildTableUsingWord(words, 81),
+                self.buildTableUsingWord(words, 87),
+            ]))
+
+            table.append(self.bulidTableGroup("운전자 기타", [
+                self.buildTableUsingWord(words, 93),
+                self.buildTableUsingWord(words, 99),
+                self.buildTableUsingWord(words, 105),
+                self.buildTableUsingWord(words, 111),
+                self.buildTableUsingWord(words, 119),
+                self.buildTableUsingWord(words, 125),
+                self.buildTableUsingWord(words, 131),
+                self.buildTableUsingWord(words, 137),
+            ]))
 
         extractedData["tables"] = table
         # print(extractedData)
@@ -96,7 +95,7 @@ class Page2(BasePage):
     # nonLife: 손해 보험 보장액
     # life: 생명 보험 보장액
     # mutual: 공제/체신보험 보장액
-    def appendTable(self, name: str, total: str, nonLife: str, life: str, mutual: str) -> dict:
+    def buildTable(self, name: str, total: str, nonLife: str, life: str, mutual: str) -> dict:
         return {
             "name": name,
             "total": total,
@@ -105,5 +104,11 @@ class Page2(BasePage):
             "mutual": mutual
         }
 
-    def appendTableUsingWord(self, words: list, start: int) -> dict:
-        return self.appendTable(words[start], words[start + 2], words[start + 3], words[start + 4], words[start + 5])
+    def bulidTableGroup(self, group: str, items: list) -> dict:
+        return {
+            "groupName": group,
+            "items": items
+        }
+
+    def buildTableUsingWord(self, words: list, start: int) -> dict:
+        return self.buildTable(words[start], words[start + 1], words[start + 3], words[start + 4], words[start + 5])

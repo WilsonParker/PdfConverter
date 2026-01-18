@@ -4,8 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Template 02. 보장 현황</title>
-    <link rel="stylesheet" href="../styles/tokens.css" />
-    <link rel="stylesheet" href="../styles/components.css" />
+    <!--<link rel="stylesheet" href="/resources/styles/print.css" />-->
+    <link rel="stylesheet" href="/resources/styles/components.css" />
     <style>
       /* 전체 영역 */
       .guarantee-container {
@@ -210,11 +210,21 @@
             <div class="summary-inner">
               <div class="summary-item summary-item-first">
                 <span class="label">보험 계약</span>
-                <span class="value">10<small> 건</small></span>
+                <!--
+                ##################################################
+                #number_of_insurance_contracts 에 값을 넣어야 해서 김땡떙 만 따로 분리해놓아서 수정 부탁드려요
+                ##################################################
+                -->
+                <span class="value"><span id="number_of_insurance_contracts">10</span><small> 건</small></span>
               </div>
               <div class="summary-item summary-item-second">
                 <span class="label">월 보험료 합계</span>
-                <span class="value">485,022<small> 원</small></span>
+                <!--
+                ##################################################
+                #monthly_insurance_premium 에 값을 넣어야 해서 김땡떙 만 따로 분리해놓아서 수정 부탁드려요
+                ##################################################
+                -->
+                <div class="value"><span id="monthly_insurance_premium">100,000</span><small> 원</small></div>
               </div>
             </div>
           </div>
@@ -239,6 +249,13 @@
 
     <script>
       const renderTemplate = () => {
+        // 1. Python에서 넘겨받은 전체 데이터 (Jinja2 기준)
+        const fullData = {{ json_data | safe }};
+
+        // 2. 상단 요약 정보 매핑
+        document.getElementById("monthly_insurance_premium").innerText = fullData.monthly_insurance_premium;
+        document.getElementById("number_of_insurance_contracts").innerText = fullData.number_of_insurance_contracts;
+
         // 1. 계약 데이터 (4개 고정)
         const contracts = Array(4).fill({
           company: "롯데손보",
@@ -249,48 +266,13 @@
         });
 
         // 2. 보장 데이터 구조
-        // 사망장해만 데이터가 있고 나머지는 빈 배열/문자로 처리
-        const guaranteeData = [
-          {
-            groupName: "사망\n장해",
-            items: [
-              {
-                name: "상해사망",
-                total: "11억 6000만",
-                values: ["1억 5000만", "1억 5000만", "-", "-"],
-              },
-              {
-                name: "상해사망",
-                total: "11억 6000만",
-                values: ["1억 5000만", "1억 5000만", "-", "-"],
-              },
-              {
-                name: "상해사망",
-                total: "11억 6000만",
-                values: ["1억 5000만", "1억 5000만", "-", "-"],
-              },
-              {
-                name: "상해사망",
-                total: "11억 6000만",
-                values: ["1억 5000만", "1억 5000만", "-", "-"],
-              },
-              {
-                name: "상해사망",
-                total: "11억 6000만",
-                values: ["1억 5000만", "1억 5000만", "-", "-"],
-              },
-            ],
-          },
-          // 나머지 8개 그룹은 빈 칸으로 생성 (총 9개 그룹 맞춤)
-          ...Array(8).fill({ groupName: "", items: [] }),
-        ];
-
         let fixedHtml = "";
         let dynamicHtml = "";
 
-        guaranteeData.forEach((group) => {
+        fullData.tables.forEach((group) => {
           // 데이터가 없는 빈 그룹이어도 5행을 생성
-          const rowCount = 5;
+          // const rowCount = Math.max(group.items.length, 5); // 최소 5 보장
+          const rowCount = group.items.length;
 
           for (let i = 0; i < rowCount; i++) {
             const item = group.items[i] || {
@@ -301,6 +283,13 @@
             const isGroupFirst = i === 0;
             const isGroupLast = i === rowCount - 1;
             const rowClass = isGroupLast ? "row-group-end" : "";
+
+            item.values = [
+              "-",
+              item.nonLife,
+              item.life,
+              item.mutual,
+            ];
 
             // 좌측 HTML
             fixedHtml += `

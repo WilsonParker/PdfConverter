@@ -1,11 +1,13 @@
 import json
-import pdfplumber
-
 from typing import Any
+
+import pdfplumber
 from jinja2 import Template
 # 설치: pip install playwright && playwright install chromium
 from playwright.sync_api import sync_playwright
+
 from src.Pages.Page1 import Page1
+from src.Pages.Page2 import Page2
 from src.Utils.FileUtil import FileUtil
 
 
@@ -14,8 +16,8 @@ class PdfUtil:
         super().__init__()
         self.fileUtil = FileUtil()
         self.composites = [
-            Page1(),
-            # Page2(),
+            # Page1(),
+            Page2(),
         ]
 
     # pdf 에서 데이터를 읽어서 딕셔너리로 반환 합니다
@@ -30,11 +32,12 @@ class PdfUtil:
             for pageNumber, page in enumerate(pdf.pages, start=1):
                 for item in self.composites:
                     if item.isCorrect(page):
-                        # 이미 데이터가 존재할 경우
-                        if len(pdfData[item.getKey()]) > 0:
-                            pdfData[item.getKey()]['tables'].append(item.extract(page)['tables'])
+                        # 이미 table 데이터가 존재할 경우
+                        if 'tables' in pdfData[item.getKey()] and 'tables' in item.extract(page) and len(pdfData[item.getKey()]['tables']) > 0:
+                            pdfData[item.getKey()]['tables'].extend(item.extract(page)['tables'])
                         else:
                             pdfData[item.getKey()] = item.extract(page)
+        # print(pdfData)
         return pdfData
 
     # 데이터를 HTML로 변환 합니다
@@ -49,6 +52,13 @@ class PdfUtil:
             # json.dumps를 사용해 파이썬 리스트를 JS 배열 문자열로 변환합니다.
             template = Template(templateStr)
             renderedHtml += template.render(json_data=json.dumps(value, ensure_ascii=False))
+
+        ##################################################
+        # 테스트 용
+        # 4. 결과 저장
+        with open('result.html', 'w', encoding='utf-8') as f:
+            f.write(renderedHtml)
+        ##################################################
 
         return renderedHtml
 
