@@ -31,8 +31,31 @@ class BasePage(ABC):
         return [w['text'] for w in page.extract_words()]
 
     # words 를 순서대로 출력하여 디버깅에 도움을 줍니다
-    def printWords(self, words) :
+    def printWords(self, words):
         for i, word in enumerate(words, start=0):
             # i는 번호, word는 해당 단어의 정보(딕셔너리)
             # print(f"{i}. {word['text']} (위치: {word['x0']}, {word['top']})")
             print(f"{i}. {word}")
+
+    # 기본 데이터 추출 (페이지 1, 2 공통)
+    def baseDataPage1And2(self, words) -> dict:
+        return {
+            # 이름
+            "name": words[0],
+            # 날짜
+            "date": f"{words[4]} {words[5]}",
+            # 나이
+            "age": self.stringUtil.removeParentthses(words[6]),
+            # 성별
+            "gender": self.stringUtil.removeSpecialCharacters(words[7]),
+            # 정상 계약 건수
+            "numberOfNormalContracts": words[11],
+            # 월 보험료
+            "monthlyInsurancePremium": words[12],
+            # 손해 보험
+            "nonLifeInsurance": words[14],
+            # 생명 보험
+            "lifeInsurance": words[15],
+            # 공제/체신보험
+            "mutualAid/PostalInsurance": words[16],
+        }

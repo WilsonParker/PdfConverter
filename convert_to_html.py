@@ -7,8 +7,8 @@ from src.Utils.FileUtil import FileUtil
 fileUtil = FileUtil()
 
 composites = [
-    # Page1(),
-    Page2(),
+    Page1(),
+    # Page2(),
 ]
 
 result = {

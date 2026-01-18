@@ -15,32 +15,11 @@ class Page2(BasePage):
         return "님의 전체 보장현황" in lines[0].strip() if lines else ""
 
     def extract(self, page) -> dict:
-        print("*** is page 1 ***")
         # 각 딕셔너리에서 'text' 값만 추출하여 새로운 리스트 생성
         words = self.convertWords(page)
-        self.printWords(words)
+        # self.printWords(words)
 
-        extractedData = {
-            # 이름
-            "name": words[0],
-            # 날짜
-            "date": f"{words[4]} {words[5]}",
-            # 나이
-            "age": self.stringUtil.removeParentthses(words[6]),
-            # 성별
-            "gender": self.stringUtil.removeSpecialCharacters(words[7]),
-            # 정상 계약 건수
-            "numberOfNormalContracts": words[11],
-            # 월 보험료
-            "monthlyInsurancePremium": words[12],
-            # 손해 보험
-            "nonLifeInsurance": words[14],
-            # 생명 보험
-            "lifeInsurance": words[15],
-            # 공제/체신보험
-            "mutualAid/PostalInsurance": words[16],
-        }
-
+        extractedData = self.baseDataPage1And2(words)
         table = {}
 
         # 유형 1의 페이지일 경우
@@ -106,7 +85,7 @@ class Page2(BasePage):
 
         extractedData["tables"] = table
 
-        print(extractedData)
+        # print(extractedData)
         return extractedData
 
     # 전체 보장 현황 테이블 추가
