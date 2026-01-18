@@ -160,7 +160,7 @@
                 <td>{{ row_data.payment_cycle }}</td>
                 <td>{{ row_data.payment_term }}</td>
                 {# 숫자 포맷팅은 파이썬에서 미리 해서 보내거나 Jinja 필터를 활용 #}
-                <td class="col-premium">{{ row_data.monthly_premium }}</td>
+                <td class="">{{ row_data.monthly_premium }}</td>
               </tr>
             {% else %}
               {# 데이터가 없을 때 출력되는 빈 행 #}
@@ -179,49 +179,5 @@
         </table>
       </section>
     </div>
-
-    <script>
-      const renderContracts = () => {
-        // 3. 테이블 리스트 매핑 (fullData.tables 배열 사용)
-        const tableBody = document.getElementById("contract-list");
-        const MAX_ROWS = 10;
-
-        const rawData = fullData.tables;
-
-        // 숫자 포맷팅 함수 (25000 -> 25,000)
-        const formatNumber = (num) => (num ? num.toLocaleString() : "");
-
-        const createRowHtml = (data, i) => {
-          // 데이터가 없는 빈 행 처리
-          if (!data) {
-            return `<tr class="row-empty"><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>`;
-          }
-
-          // 데이터가 있는 행 처리 (필드명 매칭)
-          return `
-        <tr>
-          <td>${data.index ?? 0}</td>
-          <td>${data.company_name}</td>
-          <td class="col-product">${data.product_name}</td>
-          <td class="col-dates">${data.contract_start_date} ~ ${
-            data.contract_end_date
-          }</td>
-          <td>${data.payment_cycle}</td>
-          <td>${data.payment_term}</td>
-          <td class="col-premium">${formatNumber(data.monthly_premium)}</td>
-        </tr>
-      `;
-        };
-
-        // 전체 행 생성 및 삽입
-        const rowsHtml = Array.from({ length: MAX_ROWS }, (_, i) =>
-          createRowHtml(rawData[i], i)
-        ).join("");
-
-        tableBody.innerHTML = rowsHtml;
-      };
-
-      document.addEventListener("DOMContentLoaded", renderContracts);
-    </script>
   </body>
 </html>
