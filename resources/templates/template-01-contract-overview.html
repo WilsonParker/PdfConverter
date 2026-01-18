@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Template 01. 보유 계약 현황</title>
     <!--<link rel="stylesheet" href="/resources/styles/print.css" />-->
-    <link rel="stylesheet" href="/resources/styles/components.css" />
+    {{ styleComponents | safe}}
     <style>
       /* 상단 요약 영역 */
       .header-summary {
@@ -115,31 +115,16 @@
     <div class="page" id="report-page">
       <header class="header-summary">
         <div class="title">
-          <!--
-          ##################################################
-          #user_name 에 값을 넣어야 해서 김땡떙 만 따로 분리해놓아서 수정 부탁드려요
-          ##################################################
-          -->
-          <span id="user_name">김땡땡</span>&nbsp;<span>님</span> &nbsp;&nbsp;Insurance Portfolio
+          {{ data.user_name }}&nbsp;<span>님</span> &nbsp;&nbsp;Insurance Portfolio
         </div>
         <div class="summary-grid">
           <div class="summary-item">
             <div class="label">월 보험료 합계</div>
-            <!--
-            ##################################################
-            #monthly_insurance_premium 에 값을 넣어야 해서 김땡떙 만 따로 분리해놓아서 수정 부탁드려요
-            ##################################################
-            -->
-            <div class="value"><span id="monthly_insurance_premium">100,000</span>&nbsp;<span>원</span></div>
+            <div class="value">{{ data.monthly_insurance_premium }}&nbsp;<span>원</span></div>
           </div>
           <div class="summary-item">
             <div class="label">보험 계약(정상)수</div>
-            <!--
-            ##################################################
-            #number_of_insurance_contracts 에 값을 넣어야 해서 김땡떙 만 따로 분리해놓아서 수정 부탁드려요
-            ##################################################
-            -->
-            <div class="value"><span id="number_of_insurance_contracts">1</span>&nbsp;<span>건</span></div>
+            <div class="value">{{ data.number_of_insurance_contracts }}&nbsp;<span>건</span></div>
           </div>
         </div>
       </header>
@@ -158,45 +143,49 @@
               <th style="width: 13%">월 보험료</th>
             </tr>
           </thead>
-          <tbody id="contract-list"></tbody>
+          <!-- contract-list -->
+          <tbody data-id="contract-list">
+          {% for i in range(10) %}
+            {# i번째 데이터가 존재하는지 확인 #}
+            {% if data.tables[i] is defined %}
+            {% set row_data = data.tables[i] %}
+              <tr>
+                {# 데이터가 있을 때 출력 (Jinja2 문법 {{ }} 사용) #}
+                <td>{{ i + 1 }}</td>
+                <td>{{ row_data.company_name }}</td>
+                <td class="col-product">{{ row_data.product_name }}</td>
+                <td class="col-dates">
+                  {{ row_data.contract_start_date }} ~ {{ row_data.contract_end_date }}
+                </td>
+                <td>{{ row_data.payment_cycle }}</td>
+                <td>{{ row_data.payment_term }}</td>
+                {# 숫자 포맷팅은 파이썬에서 미리 해서 보내거나 Jinja 필터를 활용 #}
+                <td class="col-premium">{{ row_data.monthly_premium }}</td>
+              </tr>
+            {% else %}
+              {# 데이터가 없을 때 출력되는 빈 행 #}
+              <tr class="row-empty">
+                <td>{{ i + 1 }}</td>
+                <td>-</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+              </tr>
+            {% endif %}
+          {% endfor %}
+          </tbody>
         </table>
       </section>
     </div>
 
     <script>
       const renderContracts = () => {
-        // 1. Python에서 넘겨받은 전체 데이터 (Jinja2 기준)
-        const fullData = {{ json_data | safe }};
-
-        // 2. 상단 요약 정보 매핑
-        document.getElementById("user_name").innerText = fullData.user_name;
-        document.getElementById("monthly_insurance_premium").innerText = fullData.monthly_insurance_premium;
-        document.getElementById("number_of_insurance_contracts").innerText = fullData.number_of_insurance_contracts;
-
         // 3. 테이블 리스트 매핑 (fullData.tables 배열 사용)
         const tableBody = document.getElementById("contract-list");
         const MAX_ROWS = 10;
 
-        /*const rawData = [
-          {
-            company_name: "롯데손보",
-            product_name: "무배당 let:drive 운전자보험(2211)",
-            contract_start_date: "2022.11.16",
-            contract_end_date: "2042.11.16",
-            payment_cycle: "월납",
-            payment_term: 20, // number
-            monthly_premium: 25000, // number
-          },
-          {
-            company_name: "롯데손보",
-            product_name: "무배당 let:drive 운전자보험(2211)",
-            contract_start_date: "2022.11.16",
-            contract_end_date: "2042.11.16",
-            payment_cycle: "월납",
-            payment_term: 20,
-            monthly_premium: 25000,
-          },
-        ];*/
         const rawData = fullData.tables;
 
         // 숫자 포맷팅 함수 (25000 -> 25,000)
