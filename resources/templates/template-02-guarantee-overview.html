@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Template 02. 보장 현황</title>
     <!--<link rel="stylesheet" href="/resources/styles/print.css" />-->
-    {{ styleComponents }}
+    {{ styleComponents | safe}}
     <style>
       /* 전체 영역 */
       .guarantee-container {
@@ -224,14 +224,65 @@
               <col class="col-name-col" />
               <col class="col-total-col" />
             </colgroup>
-            <tbody id="fixed-sidebar-body"></tbody>
+            <!-- fixed-sidebar-body -->
+            <tbody data-id="fixed-sidebar-body">
+            {% for group in data.tables %}
+              {% set rowCount = group['items'] | length %}
+              {% for item in group['items'] %}
+              <tr class="{{ 'row-group-end' if loop.last else '' }}">
+                {% if loop.first %}
+                <td class="col-group" rowspan="{{ rowCount }}">
+                  {{ group.groupName | replace('\n', '<br>') | safe }}
+                </td>
+                {% endif %}
+                <td class="col-name">{{ item.name }}</td>
+                <td class="col-total">{{ item.total }}</td>
+              </tr>
+              {% endfor %}
+            {% endfor %}
+            </tbody>
           </table>
         </div>
 
         <div class="content-dynamic">
-          <div class="contract-header-row" id="dynamic-header-row"></div>
+          <!-- dynamic-header-row -->
+          <div class="contract-header-row" data-id="dynamic-header-row">
+            {% for c in data.headerTables %}
+              <ul class="contract-col">
+                  <li class="contract-company">{{ c.company_name }}</li>
+                  {# replace 문법: | replace('바꿀문자', '새문자') | safe #}
+                  <li class="col-prod">{{ c.product_name | replace('\n', '<br>') | safe }}</li>
+                  <li class="contract-meta">{{ c.payment_maturity_str }}</li>
+                  <li class="contract-date">{{ c.payment_maturity_date }}</li>
+                  <li class="col-premium">{{ c.monthly_premium }}</li>
+              </ul>
+            {% endfor %}
+
+            {# 2. 데이터가 4개 미만일 경우 빈 칼럼 추가 #}
+            {# range(현재개수, 목표개수) #}
+            {% for _ in range(data.headerTables | length, 4) %}
+              <ul class="contract-col empty-col">
+                <li class="contract-company">-</li>
+                <li class="col-prod"></li>
+                <li class="contract-meta"></li>
+                <li class="contract-date"></li>
+                <li class="col-premium"></li>
+              </ul>
+            {% endfor %}
+          </div>
           <table class="guarantee-table" id="dynamic-table-root">
-            <tbody id="dynamic-content-body"></tbody>
+            <!-- dynamic-content-body -->
+            <tbody data-id="dynamic-content-body">
+              {% for group in data.tables %}
+                {% for item in group['items'] %}
+                  <tr class="{{ 'row-group-end' if loop.last else '' }}">
+                    {% for subItem in item['items'] %}
+                      <td class="cell-amt">{{ subItem }}</td>
+                    {% endfor %}
+                  </tr>
+                {% endfor %}
+              {% endfor %}
+            </tbody>
           </table>
         </div>
       </div>
@@ -240,94 +291,16 @@
     <script>
       ((data) => {
         const renderTemplate = () => {
-                // 1. Python에서 넘겨받은 전체 데이터 (Jinja2 기준)
-                const fullData = {{ json_data | safe }};
-
-                // 2. 상단 요약 정보 매핑
-                document.getElementById("page2_monthly_insurance_premium").innerText = fullData.monthly_insurance_premium;
-                document.getElementById("page2_number_of_insurance_contracts").innerText = fullData.number_of_insurance_contracts;
-
-                // 1. 계약 데이터 (4개 고정)
-                /*const contracts = Array(4).fill({
-                  company: "롯데손보",
-                  product: "무배당 let:drive 운전자보험(2211)",
-                  meta: "20년납/70세 만기",
-                  date: "2022.11.16 ~ 2042.11.16",
-                  premium: "25,000원",
-                });*/
-
-                const contracts = fullData.headerTables;
-
-                // 2. 보장 데이터 구조
-                let fixedHtml = "";
-                let dynamicHtml = "";
-
-                fullData.tables.forEach((group) => {
-                  // 데이터가 없는 빈 그룹이어도 5행을 생성
-                  // const rowCount = Math.max(group.items.length, 5); // 최소 5 보장
-                  const rowCount = group.items.length;
-
-                  for (let i = 0; i < rowCount; i++) {
-                    const item = group.items[i];
-                    const isGroupFirst = i === 0;
-                    const isGroupLast = i === rowCount - 1;
-                    const rowClass = isGroupLast ? "row-group-end" : "";
-
-                    item.values = item.items;
-
-                    // 좌측 HTML
-                    fixedHtml += `
-                      <tr class="${rowClass}">
-                        ${
-                          isGroupFirst
-                            ? `<td class="col-group" rowspan="${rowCount}">${group.groupName.replace(
-                                "\n",
-                                "<br>"
-                              )}</td>`
-                            : ""
-                        }
-                        <td class="col-name">${item.name}</td>
-                        <td class="col-total">${item.total}</td>
-                      </tr>`;
-
-                    // 우측 HTML (계약 개수에 맞춰 생성)
-                    dynamicHtml += `<tr class="${rowClass}">`;
-                    item.values.forEach((val) => {
-                      dynamicHtml += `<td class="cell-amt">${val}</td>`;
-                    });
-                    dynamicHtml += `</tr>`;
-                  }
-                });
-
-                // 3. 렌더링 실행
-                document.getElementById("fixed-sidebar-body").innerHTML = fixedHtml;
-                document.getElementById("dynamic-content-body").innerHTML = dynamicHtml;
-
-                // 우측 헤더 렌더링
-                document.getElementById("dynamic-header-row").innerHTML = contracts
-                  .map(
-                    (c) => `
-                  <ul class="contract-col">
-                    <li class="contract-company">${c.company_name}</li>
-                    <li class="col-prod">${c.product_name.replace("\n", "<br>")}</li>
-                    <li class="contract-meta">${c.payment_maturity_str}</li>
-                    <li class="contract-date">${c.payment_maturity_date}</li>
-                    <li class="col-premium">${c.monthly_premium}</li>
-                  </ul>
-                `
-                  )
-                  .join("");
-
-                // 4. 너비 정렬 핵심: 우측 테이블에 colgroup 삽입 (계약 개수 비례)
-                const colWidth = 100 / contracts.length;
-                const colGroupHtml = `<colgroup>${contracts
-                  .map(() => `<col style="width: ${colWidth}%">`)
-                  .join("")}</colgroup>`;
-                document
-                  .getElementById("dynamic-table-root")
-                  .insertAdjacentHTML("afterbegin", colGroupHtml);
-              };
-              renderTemplate();
+              // 4. 너비 정렬 핵심: 우측 테이블에 colgroup 삽입 (계약 개수 비례)
+              const colWidth = 100 / contracts.length;
+              const colGroupHtml = `<colgroup>${contracts
+                .map(() => `<col style="width: ${colWidth}%">`)
+                .join("")}</colgroup>`;
+              document
+                .getElementById("dynamic-table-root")
+                .insertAdjacentHTML("afterbegin", colGroupHtml);
+            };
+            renderTemplate();
       })();
     </script>
   </body>
