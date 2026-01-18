@@ -9,13 +9,15 @@ class Page2(BasePage):
     def getKey(self) -> str:
         return "page2"
 
+    def getTemplatePage(self) -> str:
+        return "template-02-guarantee-overview.html"
+
     def isCorrect(self, page) -> bool:
         # 텍스트 추출 (가장 일반적)
         lines = page.extract_text().splitlines()
         return "님의 전체 보장현황" in lines[0].strip() if lines else ""
 
     def extract(self, page) -> dict:
-        # 각 딕셔너리에서 'text' 값만 추출하여 새로운 리스트 생성
         words = self.convertWords(page)
         # self.printWords(words)
 
@@ -84,7 +86,6 @@ class Page2(BasePage):
             }
 
         extractedData["tables"] = table
-
         # print(extractedData)
         return extractedData
 

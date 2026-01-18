@@ -15,5 +15,5 @@
 
 ### Run
 ```shell
- python convert_to_html.py
+ python convert_to_pdf.py
 ```

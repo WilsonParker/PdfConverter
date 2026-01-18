@@ -26,6 +26,11 @@ class BasePage(ABC):
     def extract(self, page) -> dict:
         pass
 
+    # 데이터를 변환할 탬플릿 이름을 반환 합니다
+    @abstractmethod
+    def getTemplatePage(self) -> str:
+        pass
+
     # page.extract_words() 결과를 단어 리스트로 변환합니다
     def convertWords(self, page) -> list[Any]:
         return [w['text'] for w in page.extract_words()]
@@ -40,8 +45,8 @@ class BasePage(ABC):
     # 기본 데이터 추출 (페이지 1, 2 공통)
     def baseDataPage1And2(self, words) -> dict:
         return {
-            # 이름
-            "name": words[0],
+            # 고객 이름
+            "user_name": words[0],
             # 날짜
             "date": f"{words[4]} {words[5]}",
             # 나이
@@ -49,13 +54,15 @@ class BasePage(ABC):
             # 성별
             "gender": self.stringUtil.removeSpecialCharacters(words[7]),
             # 정상 계약 건수
-            "numberOfNormalContracts": words[11],
+            "number_of_insurance_contracts": words[11],
             # 월 보험료
-            "monthlyInsurancePremium": words[12],
+            "monthly_insurance_premium": words[12],
             # 손해 보험
-            "nonLifeInsurance": words[14],
+            "non_life_insurance": words[14],
             # 생명 보험
-            "lifeInsurance": words[15],
+            "life_insurance": words[15],
             # 공제/체신보험
-            "mutualAid/PostalInsurance": words[16],
+            "mutual_aid/postal_insurance": words[16],
+            # 탬플릿 이름
+            "template": self.getTemplatePage(),
         }
