@@ -58,7 +58,6 @@ class Page2_3(BasePage):
             "intersection_y_tolerance": 10,
         })
 
-        self.printLines(page)
         extractLines = page.extract_text().splitlines()
         for i, line in enumerate(extractLines):
             if "상해사망" in line:
@@ -105,9 +104,6 @@ class Page2_3(BasePage):
         return nextIndex
 
     def buildTable(self, row, line: str, headerTableNumbres) -> dict:
-        print(row)
-        print(line)
-
         # extractTable 에서 index 6 이 없을 경우가 있음
         if len(row) > 6:
             lastValue = row[6]
