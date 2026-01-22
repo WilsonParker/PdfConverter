@@ -145,13 +145,10 @@
           </thead>
           <!-- contract-list -->
           <tbody data-id="contract-list">
-          {% for i in range(data.max_length) %}
-            {# i번째 데이터가 존재하는지 확인 #}
-            {% if data.tables[i] is defined %}
-            {% set row_data = data.tables[i] %}
+          {% for row_data in data.tables %}
               <tr>
                 {# 데이터가 있을 때 출력 (Jinja2 문법 {{ }} 사용) #}
-                <td>{{ i + 1 }}</td>
+                <td>{{ loop.index }}</td>
                 <td>{{ row_data.company_name }}</td>
                 <td class="col-product">{{ row_data.product_name }}</td>
                 <td class="col-dates">
@@ -162,18 +159,6 @@
                 {# 숫자 포맷팅은 파이썬에서 미리 해서 보내거나 Jinja 필터를 활용 #}
                 <td class="">{{ row_data.monthly_premium }}</td>
               </tr>
-            {% else %}
-              {# 데이터가 없을 때 출력되는 빈 행 #}
-              <tr class="row-empty">
-                <td>{{ i + 1 }}</td>
-                <td>-</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-              </tr>
-            {% endif %}
           {% endfor %}
           </tbody>
         </table>

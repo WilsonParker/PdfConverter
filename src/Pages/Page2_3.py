@@ -38,6 +38,7 @@ class Page2_3(BasePage):
                 index = int(number.replace("(", "").replace(")", "")) - 1
                 if i != index:
                     continue
+
                 # 2년납/55세 만기
                 table['payment_maturity_str'] = paymentMaturityStr[n]
                 # 2023.10.31~2055.10.30
@@ -135,7 +136,7 @@ class Page2_3(BasePage):
 
     def extractPaymentMaturityStr(self, text: str) -> list[Any]:
         # 정규식 패턴: 숫자+년납/숫자+세 만기
-        pattern = r'\d+년납/\d+세\s?만기'
+        pattern = re.compile(r'(?:\d+년납/)?\d+세\s*만기')
 
         # 모든 매칭 결과 찾기
         return re.findall(pattern, text)

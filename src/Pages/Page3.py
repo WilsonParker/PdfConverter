@@ -30,17 +30,17 @@ class Page3(BasePage):
             "vertical_strategy": "lines",  # 선이 없어도 텍스트 정렬을 보고 열을 나눔
             "horizontal_strategy": "lines",  # 가로 실선을 기준으로 행을 나눔
         })
-
         tables = []
         if extractTable:
-            currentGruop = {}
-            currentSubGruop = {}
             previousGroup = ""
             previousSubGroup = ""
+            currentGruop = self.buildTableGroup(previousGroup, [])
+            currentSubGruop = {}
             for row in extractTable:
                 # row는 ['1', 'ABL생명', '무)급여실손...', '2023-10-31', ...] 형태의 리스트입니다.
                 # None 데이터 제거 및 줄바꿈(\n) 처리
                 cleanRow = [str(cell).replace('\n', '') if cell else "" for cell in row]
+                # print(f"cleanRow : {cleanRow}")
 
                 if cleanRow[0] == "" and cleanRow[1] == "" and cleanRow[2] == "":
                     continue
@@ -53,6 +53,7 @@ class Page3(BasePage):
                 # 서브그룹이 있을 경우 초기화
                 if cleanRow[1] != "":
                     previousSubGroup = cleanRow[1]
+                    # print(f"currentGruop : {currentGruop}")
                     currentGruop['totalSubRowCount'] += 1
                     currentSubGruop = self.buildTableSubGroup(previousSubGroup, [self.buildTable(cleanRow)])
 
@@ -79,14 +80,13 @@ class Page3(BasePage):
         combined = "".join(data).replace(" ", "")
         # 정규식 적용 (금액 덩어리와 날짜 덩어리를 추출)
         pattern = re.compile(
-            r'\s*([\d,]+(?:만|억)?|0)\s*'        # 금액 (100만, 1,500만, 1억, 0)
-            r'(\d{4}-\d{1,2}-\d{1,2})\s*'        # 시작일 (잘린 날짜 포함)
-            r'(\d{4}-\d{2}-\d{2})'               # 종료일
+            r'([\d,]+(?:만|억)?|0)\D*?(\d{4}-\d{1,2}-\d{1,2})\D*?(\d{4}-\d{2}-\d{2})'
         )
+        # combined는 기존처럼 row[4:7]을 합친 문자열
+        result = re.search(pattern, combined)
 
-        result = re.match(pattern, combined)
+        # print(f"row : {row}")
         # print(f"combined : {combined}")
-        # print(f"result : {result}")
 
         return {
             # 상품명
@@ -94,11 +94,11 @@ class Page3(BasePage):
             # 회사담보명
             "company_collateral": row[3],
             # 가입 금액
-            "subscription_amount": result[1],
+            "subscription_amount": result.group(1) if result and result.group(1) else "",
             # 보험시기
-            "insurance_period": result[2],
+            "insurance_period": result.group(2) if result and result.group(2) else "",
             # 보험종기
-            "insurance_term": result[3],
+            "insurance_term": result.group(3) if result and result.group(3) else "",
         }
 
     def buildTableGroup(self, group: str, items: list) -> dict:

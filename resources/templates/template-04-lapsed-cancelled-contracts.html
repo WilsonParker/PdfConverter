@@ -142,9 +142,7 @@
             </tr>
             </thead>
             <tbody data-id="contract-list">
-            {% for i in range(data.max_length) %}
-            {% if data.tables[i] is defined %}
-            {% set row_data = data.tables[i] %}
+            {% for row_data in data.tables %}
             <tr>
                 <td>{{ row_data.index }}</td>
                 <td>{{ row_data.company_name }}</td>
@@ -154,17 +152,6 @@
                 <td>{{ row_data.payment_period }}</td>
                 <td>{{ row_data.monthly_insurance_premium }}</td>
             </tr>
-            {% else %}
-            <tr class="row-empty">
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            {% endif %}
             {% endfor %}
             </tbody>
         </table>
