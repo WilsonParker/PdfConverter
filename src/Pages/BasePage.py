@@ -18,6 +18,11 @@ class BasePage(ABC):
     def getKey(self) -> str:
         pass
 
+    # 페이지의 최대 길이
+    @abstractmethod
+    def getMaxLength(self) -> int:
+        pass
+
     # 현재 페이지 정보를 실행하는게 맞는지 파악 합니다
     @abstractmethod
     def isCorrect(self, page) -> bool:
@@ -72,6 +77,8 @@ class BasePage(ABC):
             "mutual_aid/postal_insurance": words[16],
             # 탬플릿 이름
             "template": self.getTemplatePage(),
+            # 페이지 최대 길이
+            "max_length": self.getMaxLength(),
         }
 
     def buildBaseData2(self, words: list, pdfData: dict) -> dict:
@@ -90,4 +97,6 @@ class BasePage(ABC):
             "monthly_insurance_premium": pdfData["monthly_insurance_premium"],
             # 탬플릿 이름
             "template": self.getTemplatePage(),
+            # 페이지 최대 길이
+            "max_length": self.getMaxLength(),
         }

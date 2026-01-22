@@ -2,6 +2,9 @@ from .BasePage import BasePage
 
 
 class Page1(BasePage):
+    def getMaxLength(self) -> int:
+        return 10
+
     def getKey(self) -> str:
         return "page1"
 
