@@ -18,19 +18,14 @@ class Page3(BasePage):
         return "님의 담보별 가입 현황" in lines[0].strip() if lines else ""
 
     def extract(self, page, pdfData: dict) -> dict:
-        words = self.convertWords(page)
-        # self.printWords(words)
-
         extractedData = {
             "template": self.getTemplatePage(),
         }
 
         # 표 추출 (이미지 속 표 구조를 감지)
         extractTable = page.extract_table({
-            "vertical_strategy": "text",  # 선이 없어도 텍스트 정렬을 보고 열을 나눔
+            "vertical_strategy": "lines",  # 선이 없어도 텍스트 정렬을 보고 열을 나눔
             "horizontal_strategy": "lines",  # 가로 실선을 기준으로 행을 나눔
-            "snap_tolerance": 3,
-            "text_x_tolerance": 3,
         })
 
         tables = []
@@ -42,9 +37,8 @@ class Page3(BasePage):
             for row in extractTable:
                 # row는 ['1', 'ABL생명', '무)급여실손...', '2023-10-31', ...] 형태의 리스트입니다.
                 # None 데이터 제거 및 줄바꿈(\n) 처리
-                cleanRow = [str(cell).replace('\n', ' ') if cell else "" for cell in row]
+                cleanRow = [str(cell).replace('\n', '') if cell else "" for cell in row]
 
-                print(cleanRow)
                 if cleanRow[0] == "" and cleanRow[1] == "" and cleanRow[2] == "":
                     continue
 
@@ -74,7 +68,7 @@ class Page3(BasePage):
 
         extractedData["tables"] = tables
 
-        print(extractedData)
+        # print(extractedData)
         return extractedData
 
     def buildTable(self, row) -> dict:
