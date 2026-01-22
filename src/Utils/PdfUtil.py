@@ -7,7 +7,7 @@ import pdfkit
 from playwright.sync_api import sync_playwright
 from jinja2 import Environment, FileSystemLoader
 from src.Pages.Page1 import Page1
-from src.Pages.Page2_2 import Page2_2
+from src.Pages.Page2_3 import Page2_3
 from src.Pages.Page3 import Page3
 from src.Pages.Page4 import Page4
 from src.Utils.FileUtil import FileUtil
@@ -19,8 +19,8 @@ class PdfUtil:
         self.fileUtil = FileUtil()
         self.composites = [
             Page1(),
-            # Page2_2(),
-            # Page3(),
+            Page2_3(),
+            Page3(),
             Page4(),
         ]
 

@@ -5,7 +5,7 @@ from .BasePage import BasePage
 
 
 # 전체 보장 현황 페이지
-class Page2_2(BasePage):
+class Page2_3(BasePage):
 
     def getMaxLength(self) -> int:
         return 0
@@ -46,7 +46,7 @@ class Page2_2(BasePage):
 
         # 표 추출 (이미지 속 표 구조를 감지)
         extractTable = page.extract_table({
-            "vertical_strategy": "lines", # 우선 실선이 있는지 확인
+            "vertical_strategy": "lines",  # 우선 실선이 있는지 확인
             "horizontal_strategy": "lines",
             # 만약 실선이 없다면 아래 explicit_vertical_lines를 활성화하세요.
             # "vertical_strategy": "explicit",
@@ -54,9 +54,16 @@ class Page2_2(BasePage):
 
             "snap_tolerance": 3,
             "text_x_tolerance": 2,
-            "text_y_tolerance": 3, # 행 높이 인식을 더 정교하게 함
+            "text_y_tolerance": 3,  # 행 높이 인식을 더 정교하게 함
             "intersection_y_tolerance": 10,
         })
+
+        self.printLines(page)
+        extractLines = page.extract_text().splitlines()
+        for i, line in enumerate(extractLines):
+            if "상해사망" in line:
+                startLineIndex = i
+                break
 
         tables = []
         if extractTable:
@@ -76,7 +83,8 @@ class Page2_2(BasePage):
                     items = []
                     previousGroup = cleanRow[0]
 
-                items.append(self.buildTable(cleanRow))
+                items.append(self.buildTable(cleanRow, extractLines[startLineIndex], headerTableNumbres))
+                startLineIndex = self.nextLineIndex(extractLines, startLineIndex)
 
         tables.append(self.buildTableGroup(previousGroup, items))
 
@@ -85,7 +93,32 @@ class Page2_2(BasePage):
         # print(extractedData)
         return extractedData
 
-    def buildTable(self, row) -> dict:
+    def nextLineIndex(self, extractLines: list, currentIndex: int) -> int:
+        nextIndex = currentIndex + 1
+        pattern = re.compile(r'[\d,]+(?:만|억)|\b0\b|-')
+        while nextIndex < len(extractLines):
+            line = extractLines[nextIndex].strip()
+            if bool(pattern.search(line)):
+                break
+            else:
+                nextIndex += 1
+        return nextIndex
+
+    def buildTable(self, row, line: str, headerTableNumbres) -> dict:
+        print(row)
+        print(line)
+
+        # extractTable 에서 index 6 이 없을 경우가 있음
+        if len(row) > 6:
+            lastValue = row[6]
+        else:
+            result = re.findall(r'[\d,]+(?:만|억)|0|-', line)
+            isSecondPage = "(5)" in headerTableNumbres
+            if not isSecondPage:
+                lastValue = result[-1] if result else ""
+            else:
+                lastValue = ""
+
         return {
             "name": row[1],
             "total": row[2],
@@ -94,7 +127,7 @@ class Page2_2(BasePage):
                 row[4],
                 row[5],
                 # index 6 이 없을 경우
-                row[6] if len(row) > 6 else "",
+                lastValue,
             ]
         }
 
