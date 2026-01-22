@@ -25,7 +25,7 @@ class BasePage(ABC):
 
     # 페이지 데이터를 추출 합니다
     @abstractmethod
-    def extract(self, page) -> dict:
+    def extract(self, page, pdfData: dict) -> dict:
         pass
 
     # 데이터를 변환할 탬플릿 이름을 반환 합니다
@@ -44,8 +44,13 @@ class BasePage(ABC):
             # print(f"{i}. {word['text']} (위치: {word['x0']}, {word['top']})")
             print(f"{i}. {word}")
 
+    # lines 를 순서대로 출력하여 디버깅에 도움을 줍니다
+    def printLines(self, page):
+        for i, line in enumerate(page.extract_text().splitlines(), start=0):
+            print(f"{i}. {line}")
+
     # 기본 데이터 추출 (페이지 1, 2 공통)
-    def baseDataPage1And2(self, words) -> dict:
+    def buildBaseData(self, words) -> dict:
         return {
             # 고객 이름
             "user_name": words[0],
@@ -65,6 +70,24 @@ class BasePage(ABC):
             "life_insurance": words[15],
             # 공제/체신보험
             "mutual_aid/postal_insurance": words[16],
+            # 탬플릿 이름
+            "template": self.getTemplatePage(),
+        }
+
+    def buildBaseData2(self, words: list, pdfData: dict) -> dict:
+        return {
+            # 고객 이름
+            "user_name": words[0],
+            # 날짜
+            "date": f"{words[4]} {words[5]}",
+            # 나이
+            "age": self.stringUtil.removeParentthses(words[6]),
+            # 성별
+            "gender": self.stringUtil.removeSpecialCharacters(words[7]),
+            # 정상 계약 건수
+            "number_of_insurance_contracts": pdfData["number_of_insurance_contracts"],
+            # 월 보험료
+            "monthly_insurance_premium": pdfData["monthly_insurance_premium"],
             # 탬플릿 이름
             "template": self.getTemplatePage(),
         }

@@ -4,3 +4,4 @@ pdfplumber
 jinja2
 json
 playwright
+pdfkit

@@ -1,6 +1,9 @@
+import json
 import os
 import pathlib
 from pathlib import Path
+
+from jinja2 import Template
 
 
 class FileUtil:
@@ -23,6 +26,14 @@ class FileUtil:
                 raise RuntimeError(path + "이 폴더에서 PDF 파일을 찾을 수 없습니다.")
             else:
                 return pdfFiles
+
+    def readPdf(self, template, value) -> str:
+        with open(f"{self.getTemplatePath()}/{template}", 'r', encoding='utf-8') as f:
+            templateStr = f.read()
+        # Jinja2를 사용하여 데이터 주입
+        # json.dumps를 사용해 파이썬 리스트를 JS 배열 문자열로 변환합니다.
+        template = Template(templateStr)
+        return template.render(json_data=json.dumps(value, ensure_ascii=False))
 
     # 경로에서 확장자 포함 파일명만 추출 (예: test.pdf)
     def getFileName(self, path: str) -> str:
