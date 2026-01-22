@@ -43,10 +43,16 @@ class Page2_2(BasePage):
 
         # 표 추출 (이미지 속 표 구조를 감지)
         extractTable = page.extract_table({
-            "vertical_strategy": "text",  # 선이 없어도 텍스트 정렬을 보고 열을 나눔
-            "horizontal_strategy": "lines",  # 가로 실선을 기준으로 행을 나눔
+            "vertical_strategy": "lines", # 우선 실선이 있는지 확인
+            "horizontal_strategy": "lines",
+            # 만약 실선이 없다면 아래 explicit_vertical_lines를 활성화하세요.
+            # "vertical_strategy": "explicit",
+            # "explicit_vertical_lines": [좌표값들...],
+
             "snap_tolerance": 3,
-            "text_x_tolerance": 3,
+            "text_x_tolerance": 2,
+            "text_y_tolerance": 3, # 행 높이 인식을 더 정교하게 함
+            "intersection_y_tolerance": 10,
         })
 
         tables = []
