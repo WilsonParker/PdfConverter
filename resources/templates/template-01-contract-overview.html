@@ -145,7 +145,7 @@
           </thead>
           <!-- contract-list -->
           <tbody data-id="contract-list">
-          {% for i in range(10) %}
+          {% for i in range(data.max_length) %}
             {# i번째 데이터가 존재하는지 확인 #}
             {% if data.tables[i] is defined %}
             {% set row_data = data.tables[i] %}

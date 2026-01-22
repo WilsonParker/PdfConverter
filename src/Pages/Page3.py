@@ -6,6 +6,9 @@ from .BasePage import BasePage
 # 전체 보장 현황 페이지
 class Page3(BasePage):
 
+    def getMaxLength(self) -> int:
+        return 37
+
     def getKey(self) -> str:
         return "page3"
 

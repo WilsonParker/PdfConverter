@@ -30,8 +30,6 @@ class Page4(BasePage):
             "horizontal_strategy": "lines",
         })
 
-        print(extractTable)
-
         tables = []
         if extractTable:
             for row in extractTable:
@@ -40,7 +38,7 @@ class Page4(BasePage):
 
         extractedData["tables"] = tables
 
-        print(extractedData)
+        # print(extractedData)
         return extractedData
 
     def buildTable(self, row) -> dict:

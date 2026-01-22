@@ -3,7 +3,7 @@ from .BasePage import BasePage
 
 class Page1(BasePage):
     def getMaxLength(self) -> int:
-        return 10
+        return 20
 
     def getKey(self) -> str:
         return "page1"
@@ -46,7 +46,7 @@ class Page1(BasePage):
             # 계약 시작일
             "contract_start_date": row[3],
             # 계약 만료일
-            "contract_end_date": self.dateUtil.addYearsToDate(row[3], row[5]),
+            "contract_end_date": self.dateUtil.addYearsToDate(row[3], row[5]) if row[4] != "" else '',
             # 납입 주기
             "payment_cycle": row[4],
             # 납입 기간
