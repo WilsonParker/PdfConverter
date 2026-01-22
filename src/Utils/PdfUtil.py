@@ -9,6 +9,7 @@ from jinja2 import Environment, FileSystemLoader
 from src.Pages.Page1 import Page1
 from src.Pages.Page2_2 import Page2_2
 from src.Pages.Page3 import Page3
+from src.Pages.Page4 import Page4
 from src.Utils.FileUtil import FileUtil
 
 
@@ -17,9 +18,10 @@ class PdfUtil:
         super().__init__()
         self.fileUtil = FileUtil()
         self.composites = [
-            # Page1(),
+            Page1(),
             # Page2_2(),
-            Page3(),
+            # Page3(),
+            Page4(),
         ]
 
     # pdf 에서 데이터를 읽어서 딕셔너리로 반환 합니다
@@ -37,10 +39,9 @@ class PdfUtil:
                         extractData = item.extract(page, pdfData)
 
                         # 테이블 조합
-                        if item.getKey() in ['page1', 'page3']:
+                        if item.getKey() in ['page1', 'page3', 'page4']:
                             # 이미 table 데이터가 존재할 경우
-                            if 'tables' in pdfData[item.getKey()] and 'tables' in extractData and len(
-                                    pdfData[item.getKey()]['tables']) > 0:
+                            if 'tables' in pdfData[item.getKey()] and 'tables' in extractData and len(pdfData[item.getKey()]['tables']) > 0:
                                 pdfData[item.getKey()]['tables'].extend(extractData['tables'])
                             else:
                                 pdfData[item.getKey()] = extractData
