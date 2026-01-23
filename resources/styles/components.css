@@ -26,8 +26,8 @@
 body {
   font-family: 'Pretendard', sans-serif;
   margin: 0;
-  padding: 20px;
-  background: #eee;
+  padding: 0;
+  background: #fff;
 }
 
 ul {
@@ -37,14 +37,14 @@ ul {
 }
 
 .page {
-  width: 210mm; /* A4 기준 */
-  min-height: 297mm;
+  width: 100%;
+  min-height: auto; /* 고정 높이 제거 - 실제 콘텐츠 높이에 따름 */
   background: var(--color-white);
   color: var(--color-primary);
   margin: 0 auto;
   padding: 20px 30px;
   position: relative;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  box-shadow: none;
 }
 
 /* Utilities */

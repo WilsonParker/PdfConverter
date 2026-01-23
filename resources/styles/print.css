@@ -1,6 +1,6 @@
 @page {
   size: A4;
-  margin: 12mm;
+  margin: 0; /* PDF 페이지에 꽉 차도록 외곽 여백 제거 */
 }
 
 html,
