@@ -1,5 +1,7 @@
 import re
 
+import copy
+
 from .BasePage import BasePage
 
 
@@ -13,7 +15,7 @@ class Page3(BasePage):
 
         result = []
         dividedTables = self.appendRemainedTable(tables)
-        for dividedTable in reversed(dividedTables) :
+        for dividedTable in reversed(dividedTables):
             cloneExtractData = extractData.copy()
             cloneExtractData['tables'] = dividedTable
             result.append(cloneExtractData)
@@ -64,7 +66,7 @@ class Page3(BasePage):
             previousGroup = ""
             previousSubGroup = ""
             currentGruop = self.buildTableGroup(previousGroup, [])
-            currentSubGruop = {}
+            currentSubGroup = {}
             for row in extractTable:
                 # row는 ['1', 'ABL생명', '무)급여실손...', '2023-10-31', ...] 형태의 리스트입니다.
                 # None 데이터 제거 및 줄바꿈(\n) 처리
@@ -84,16 +86,22 @@ class Page3(BasePage):
                     previousSubGroup = cleanRow[1]
                     # print(f"currentGruop : {currentGruop}")
                     currentGruop['totalSubRowCount'] += 1
-                    currentSubGruop = self.buildTableSubGroup(previousSubGroup, [self.buildTable(cleanRow)])
+                    currentSubGroup = self.buildTableSubGroup(previousSubGroup, [self.buildTable(cleanRow)])
 
                 # 서브그룹의 아이템 추가
                 if cleanRow[0] == "" and cleanRow[1] == "":
                     currentGruop['totalSubRowCount'] += 1
-                    currentSubGruop['items'].append(self.buildTable(cleanRow))
+
+                    # 페이지 이동으로 인해 데이터가 없는 경우 마지막 데이터 사용
+                    if 'items' not in currentSubGroup:
+                        pdfData[self.getKey()]['tables'][-1]['items'][-1]['items'].append(self.buildTable(cleanRow))
+                        pdfData[self.getKey()]['tables'][-1]['totalSubRowCount'] += 1
+                    else:
+                        currentSubGroup['items'].append(self.buildTable(cleanRow))
 
                 # 이전 서브그룹 데이터가 있을 경우 추가
                 if cleanRow[1] != "":
-                    currentGruop['items'].append(currentSubGruop)
+                    currentGruop['items'].append(currentSubGroup)
 
                 # 이전 그룹 데이터가 있을 경우 추가
                 if cleanRow[0] != "":
