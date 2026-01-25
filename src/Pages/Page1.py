@@ -52,7 +52,7 @@ class Page1(BasePage):
             for row in extractTable:
                 # row는 ['1', 'ABL생명', '무)급여실손...', '2023-10-31', ...] 형태의 리스트입니다.
                 # None 데이터 제거 및 줄바꿈(\n) 처리
-                cleanRow = [str(cell).replace('\n', ' ') if cell else "" for cell in row]
+                cleanRow = [str(cell).replace('\n', '') if cell else "" for cell in row]
                 tables.append(self.appendTable(cleanRow))
 
         extractedData = self.buildBaseData(words)

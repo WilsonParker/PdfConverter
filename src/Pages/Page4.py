@@ -52,7 +52,7 @@ class Page4(BasePage):
         tables = []
         if extractTable:
             for row in extractTable:
-                cleanRow = [str(cell).replace('\n', ' ') if cell else "" for cell in row]
+                cleanRow = [str(cell).replace('\n', '') if cell else "" for cell in row]
                 tables.append(self.buildTable(cleanRow))
 
         extractedData["tables"] = tables
