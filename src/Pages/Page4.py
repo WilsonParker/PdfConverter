@@ -41,7 +41,13 @@ class Page4(BasePage):
 
     def extract(self, page, pdfData: dict) -> dict:
         words = self.convertWords(page)
-        extractedData = self.buildBaseData2(words, pdfData['page1'][0])
+
+        if isinstance(pdfData['page1'], list):
+            page1Data = pdfData['page1'][0]
+        else:
+            page1Data = pdfData['page1']
+
+        extractedData = self.buildBaseData2(words, page1Data)
 
         # 표 추출 (이미지 속 표 구조를 감지)
         extractTable = page.extract_table({

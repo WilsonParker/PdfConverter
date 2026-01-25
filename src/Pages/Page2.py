@@ -27,7 +27,12 @@ class Page2(BasePage):
     def extract(self, page, pdfData: dict) -> dict:
         words = self.convertWords(page)
         # self.printWords(words)
-        page1Data = pdfData['page1'][0]
+
+        if isinstance(pdfData['page1'], list):
+            page1Data = pdfData['page1'][0]
+        else:
+            page1Data = pdfData['page1']
+
         extractedData = self.buildBaseData2(words, page1Data)
         headerTables = []
 
