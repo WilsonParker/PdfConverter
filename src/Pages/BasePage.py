@@ -23,9 +23,9 @@ class BasePage(ABC):
     def getMaxLength(self) -> int:
         pass
 
-    # 테이블 통합
+    # 테이블 데이터 크기에 따라 페이지를 분할 합니다
     @abstractmethod
-    def concatTable(self, pdfData: dict, extractData: dict) -> dict:
+    def dividePage(self, pdfData: dict, extractData: dict) -> list:
         pass
 
     # 현재 페이지 정보를 실행하는게 맞는지 파악 합니다

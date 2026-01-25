@@ -44,7 +44,7 @@ class PdfUtil:
                         elif item.getMaxLength() > 0:
                             # 이미 table 데이터가 존재할 경우
                             if 'tables' in pdfData[item.getKey()] and 'tables' in extractData and len(pdfData[item.getKey()]['tables']) > 0:
-                                pdfData[item.getKey()] = item.concatTable(pdfData[item.getKey()], extractData)
+                                pdfData[item.getKey()] = item.dividePage(pdfData[item.getKey()], extractData)
                             else:
                                 pdfData[item.getKey()] = extractData
 

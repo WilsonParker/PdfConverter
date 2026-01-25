@@ -5,7 +5,8 @@ from .BasePage import BasePage
 
 # 전체 보장 현황 페이지
 class Page4(BasePage):
-    def concatTable(self, pdfData: dict, extractData: dict) -> dict:
+    def dividePage(self, pdfData: dict, extractData: dict) -> list:
+        result = []
         originSize = len(pdfData['tables'])
         newSize = len(extractData['tables'])
 
@@ -21,7 +22,8 @@ class Page4(BasePage):
         if originSize + newSize >= self.getMaxLength():
             slicedTable = extractData['tables'][remainedSize: newSize]
             pdfData['tables'].append(slicedTable)
-        return pdfData
+
+        return result
 
     def getMaxLength(self) -> int:
         return 20

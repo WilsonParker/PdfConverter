@@ -7,7 +7,7 @@ from .BasePage import BasePage
 # 전체 보장 현황 페이지
 class Page2(BasePage):
 
-    def concatTable(self, pdfData: dict, extractData: dict) -> dict:
+    def dividePage(self, pdfData: dict, extractData: dict) -> list:
         pass
 
     def getMaxLength(self) -> int:

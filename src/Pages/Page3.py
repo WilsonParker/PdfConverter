@@ -6,11 +6,37 @@ from .BasePage import BasePage
 # 전체 보장 현황 페이지
 class Page3(BasePage):
 
-    def concatTable(self, pdfData: dict, extractData: dict) -> dict:
-        pass
+    def dividePage(self, pdfData: dict, extractData: dict) -> list:
+        tables = []
+        tables.extend(pdfData['tables'])
+        tables.extend(extractData['tables'])
+
+        result = []
+        dividedTables = self.appendRemainedTable(tables)
+        for dividedTable in reversed(dividedTables) :
+            cloneExtractData = extractData.copy()
+            cloneExtractData['tables'] = dividedTable
+            result.append(cloneExtractData)
+        return result
+
+    def appendRemainedTable(self, remainedTables: dict) -> list:
+        result = []
+        slicedTable = []
+        index = 0
+        subGroupLength = 0
+        for group in remainedTables:
+            if subGroupLength <= self.getMaxLength():
+                subGroupLength += group['totalSubRowCount']
+                slicedTable.append(group)
+            else:
+                result.extend(self.appendRemainedTable(remainedTables[index:len(remainedTables)]))
+                break
+            index += 1
+        result.append(slicedTable)
+        return result
 
     def getMaxLength(self) -> int:
-        return 37
+        return 40
 
     def getKey(self) -> str:
         return "page3"
