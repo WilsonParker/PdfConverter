@@ -3,7 +3,7 @@ from .BasePage import BasePage
 
 class Page1(BasePage):
     def getMaxLength(self) -> int:
-        return 17
+        return 20
 
     def getKey(self) -> str:
         return "page1"

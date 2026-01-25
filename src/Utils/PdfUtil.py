@@ -1,11 +1,10 @@
 from typing import Any
 
 import pdfplumber
-import pdfkit
-
+from jinja2 import Environment, FileSystemLoader
 # 설치: pip install playwright && playwright install chromium
 from playwright.sync_api import sync_playwright
-from jinja2 import Environment, FileSystemLoader
+
 from src.Pages.Page1 import Page1
 from src.Pages.Page2_3 import Page2_3
 from src.Pages.Page3 import Page3
@@ -38,11 +37,26 @@ class PdfUtil:
                     if item.isCorrect(page):
                         extractData = item.extract(page, pdfData)
 
-                        # 테이블 조합
-                        if item.getKey() in ['page1', 'page3', 'page4']:
+                        # 한 페이지에 데이터 제한이 있을 경우
+                        if item.getMaxLength() > 0:
                             # 이미 table 데이터가 존재할 경우
                             if 'tables' in pdfData[item.getKey()] and 'tables' in extractData and len(pdfData[item.getKey()]['tables']) > 0:
-                                pdfData[item.getKey()]['tables'].extend(extractData['tables'])
+                                originSize = len(pdfData[item.getKey()]['tables'])
+                                newSize = len(extractData['tables'])
+
+                                # 남은 크기
+                                remainedSize = item.getMaxLength() - originSize
+
+                                # 최대 길이를 넘지 않는 선에서 데이터 추가
+                                if originSize < item.getMaxLength():
+                                    slicedTable = extractData['tables'][0:remainedSize]
+                                    pdfData[item.getKey()]['tables'].extend(slicedTable)
+
+                                # 새로운 데이터가 남아 있을 경우 새로운 페이지로 추가
+                                if originSize + newSize >= item.getMaxLength():
+                                    slicedTable = extractData['tables'][remainedSize: newSize]
+                                    pdfData[item.getKey()]['tables'].append(slicedTable)
+
                             else:
                                 pdfData[item.getKey()] = extractData
                         elif item.getKey() in ['page2']:
@@ -86,11 +100,13 @@ class PdfUtil:
                 for idx, item in enumerate(value):
                     # 2. 사용할 HTML 템플릿 파일 로드
                     template = env.get_template(item["template"])
-                    renderedHtml.append(template.render(data=item, stylePrint=self.getStylePrintSource(), styleComponents=self.getStyleComponentSource()))
+                    renderedHtml.append(template.render(data=item, stylePrint=self.getStylePrintSource(),
+                                                        styleComponents=self.getStyleComponentSource()))
             else:
                 # 2. 사용할 HTML 템플릿 파일 로드
                 template = env.get_template(value["template"])
-                renderedHtml.append(template.render(data=value, stylePrint=self.getStylePrintSource(), styleComponents=self.getStyleComponentSource()))
+                renderedHtml.append(template.render(data=value, stylePrint=self.getStylePrintSource(),
+                                                    styleComponents=self.getStyleComponentSource()))
 
         # 테스트 용
         # 4. 결과 저장
@@ -121,6 +137,7 @@ class PdfUtil:
     # style print 소스 반환
     def getStylePrintSource(self) -> str:
         return self.getStyleSource('print')
+
     # style print 소스 반환
     def getStyleComponentSource(self) -> str:
         return self.getStyleSource('components')

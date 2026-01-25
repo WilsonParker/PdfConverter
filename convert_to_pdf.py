@@ -10,7 +10,6 @@ try:
         # print(data)
         htmlStr = pdfUtil.convertDataToPythonHtml(data)
         pdfUtil.convertHtmlToPdf(htmlStr, fileUtil.getFileName(pdfPath))
-        # break
 except FileNotFoundError:
     raise RuntimeError(f"오류: '{pdfPath}' 파일을 찾을 수 없습니다. 경로를 확인해주세요.")
 except Exception as e:
