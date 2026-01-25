@@ -55,7 +55,7 @@
         font-size: 12px;
       }
       .summary-item .value {
-        font-size: 18px;
+        font-size: 16px;
       }
       .summary-item .value span {
         font-size: 12px;
@@ -145,21 +145,21 @@
           </thead>
           <!-- contract-list -->
           <tbody data-id="contract-list">
-          {% for row_data in data.tables %}
-              <tr>
-                {# 데이터가 있을 때 출력 (Jinja2 문법 {{ }} 사용) #}
-                <td>{{ loop.index }}</td>
-                <td>{{ row_data.company_name }}</td>
-                <td class="col-product">{{ row_data.product_name }}</td>
-                <td class="col-dates">
-                  {{ row_data.contract_start_date }} ~ {{ row_data.contract_end_date }}
-                </td>
-                <td>{{ row_data.payment_cycle }}</td>
-                <td>{{ row_data.payment_term }}</td>
-                {# 숫자 포맷팅은 파이썬에서 미리 해서 보내거나 Jinja 필터를 활용 #}
-                <td class="">{{ row_data.monthly_premium }}</td>
-              </tr>
-          {% endfor %}
+            {% for row_data in data.tables %}
+            <tr>
+              {# 데이터가 있을 때 출력 (Jinja2 문법 {{ }} 사용) #}
+              <td>{{ loop.index }}</td>
+              <td>{{ row_data.company_name }}</td>
+              <td class="col-product">{{ row_data.product_name }}</td>
+              <td class="col-dates">
+                {{ row_data.contract_start_date }} ~ {{ row_data.contract_end_date }}
+              </td>
+              <td>{{ row_data.payment_cycle }}</td>
+              <td>{{ row_data.payment_term }}</td>
+              {# 숫자 포맷팅은 파이썬에서 미리 해서 보내거나 Jinja 필터를 활용 #}
+              <td class="">{{ row_data.monthly_premium }}</td>
+            </tr>
+            {% endfor %}
           </tbody>
         </table>
       </section>
