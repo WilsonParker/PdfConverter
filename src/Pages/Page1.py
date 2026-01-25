@@ -2,6 +2,24 @@ from .BasePage import BasePage
 
 
 class Page1(BasePage):
+    def concatTable(self, pdfData: dict, extractData: dict) -> dict:
+        originSize = len(pdfData['tables'])
+        newSize = len(extractData['tables'])
+
+        # 남은 크기
+        remainedSize = self.getMaxLength() - originSize
+
+        # 최대 길이를 넘지 않는 선에서 데이터 추가
+        if originSize < self.getMaxLength():
+            slicedTable = extractData['tables'][0:remainedSize]
+            pdfData['tables'].extend(slicedTable)
+
+        # 새로운 데이터가 남아 있을 경우 새로운 페이지로 추가
+        if originSize + newSize >= self.getMaxLength():
+            slicedTable = extractData['tables'][remainedSize: newSize]
+            pdfData['tables'].append(slicedTable)
+        return pdfData
+
     def getMaxLength(self) -> int:
         return 20
 

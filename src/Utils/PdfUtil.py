@@ -6,7 +6,7 @@ from jinja2 import Environment, FileSystemLoader
 from playwright.sync_api import sync_playwright
 
 from src.Pages.Page1 import Page1
-from src.Pages.Page2_3 import Page2_3
+from src.Pages.Page2 import Page2
 from src.Pages.Page3 import Page3
 from src.Pages.Page4 import Page4
 from src.Utils.FileUtil import FileUtil
@@ -18,7 +18,7 @@ class PdfUtil:
         self.fileUtil = FileUtil()
         self.composites = [
             Page1(),
-            Page2_3(),
+            Page2(),
             Page3(),
             Page4(),
         ]
@@ -37,31 +37,16 @@ class PdfUtil:
                     if item.isCorrect(page):
                         extractData = item.extract(page, pdfData)
 
+                        # page2 일 경우 페이지 별로 새로운 페이지로 추가
+                        if item.getKey() in ['page2']:
+                            pdfData[item.getKey()].append(extractData)
                         # 한 페이지에 데이터 제한이 있을 경우
-                        if item.getMaxLength() > 0:
+                        elif item.getMaxLength() > 0:
                             # 이미 table 데이터가 존재할 경우
                             if 'tables' in pdfData[item.getKey()] and 'tables' in extractData and len(pdfData[item.getKey()]['tables']) > 0:
-                                originSize = len(pdfData[item.getKey()]['tables'])
-                                newSize = len(extractData['tables'])
-
-                                # 남은 크기
-                                remainedSize = item.getMaxLength() - originSize
-
-                                # 최대 길이를 넘지 않는 선에서 데이터 추가
-                                if originSize < item.getMaxLength():
-                                    slicedTable = extractData['tables'][0:remainedSize]
-                                    pdfData[item.getKey()]['tables'].extend(slicedTable)
-
-                                # 새로운 데이터가 남아 있을 경우 새로운 페이지로 추가
-                                if originSize + newSize >= item.getMaxLength():
-                                    slicedTable = extractData['tables'][remainedSize: newSize]
-                                    pdfData[item.getKey()]['tables'].append(slicedTable)
-
+                                pdfData[item.getKey()] = item.concatTable(pdfData[item.getKey()], extractData)
                             else:
                                 pdfData[item.getKey()] = extractData
-                        elif item.getKey() in ['page2']:
-                            # page2 일 경우 페이지 별로 새로운 페이지로 추가
-                            pdfData[item.getKey()].append(extractData)
 
         return pdfData
 

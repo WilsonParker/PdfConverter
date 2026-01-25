@@ -1,8 +1,14 @@
+import re
+from typing import Any
+
 from .BasePage import BasePage
 
 
 # 전체 보장 현황 페이지
 class Page2(BasePage):
+
+    def concatTable(self, pdfData: dict, extractData: dict) -> dict:
+        pass
 
     def getMaxLength(self) -> int:
         return 0
@@ -16,102 +22,145 @@ class Page2(BasePage):
     def isCorrect(self, page) -> bool:
         # 텍스트 추출 (가장 일반적)
         lines = page.extract_text().splitlines()
-        return "님의 전체 보장현황" in lines[0].strip() if lines else ""
+        return "님의 상품별 가입현황" in lines[0].strip() if lines else ""
 
     def extract(self, page, pdfData: dict) -> dict:
         words = self.convertWords(page)
         # self.printWords(words)
 
-        extractedData = self.buildBaseData(words)
-        table = []
+        extractedData = self.buildBaseData2(words, pdfData['page1'])
+        headerTables = []
 
-        # 유형 1의 페이지일 경우
-        if "상해사망" in words[17]:
-            table.append(self.bulidTableGroup("사망장해", [
-                self.buildTableUsingWord(words, 17),
-                self.buildTableUsingWord(words, 23),
-                self.buildTableUsingWord(words, 31),
-                self.buildTableUsingWord(words, 37),
-            ]))
+        text = page.extract_text()
+        headerTableNumbres = self.getHeaderTableNumbers(text)
+        paymentMaturityStr = self.extractPaymentMaturityStr(text)
+        paymentMaturityDate = self.extractPaymentMaturityDate(text)
 
-            table.append(self.bulidTableGroup("치매간병", [
-                self.buildTableUsingWord(words, 43),
-                self.buildTableUsingWord(words, 49),
-                self.buildTableUsingWord(words, 57),
-                self.buildTableUsingWord(words, 63),
-            ]))
+        for n, number in enumerate(headerTableNumbres):
+            for i, table in enumerate(pdfData['page1']['tables']):
+                index = int(number.replace("(", "").replace(")", "")) - 1
+                if i != index:
+                    continue
 
-            table.append(self.bulidTableGroup("암 진단", [
-                self.buildTableUsingWord(words, 69),
-                self.buildTableUsingWord(words, 75),
-                self.buildTableUsingWord(words, 83),
-                self.buildTableUsingWord(words, 89),
-            ]))
+                # 2년납/55세 만기
+                table['payment_maturity_str'] = paymentMaturityStr[n]
+                # 2023.10.31~2055.10.30
+                table['payment_maturity_date'] = paymentMaturityDate[n]
+                headerTables.append(table)
 
-            table.append(self.bulidTableGroup("뇌/심장 진단", [
-                self.buildTableUsingWord(words, 95),
-                self.buildTableUsingWord(words, 101),
-                self.buildTableUsingWord(words, 108),
-                self.buildTableUsingWord(words, 115),
-                self.buildTableUsingWord(words, 121),
-            ]))
+        # 표 추출 (이미지 속 표 구조를 감지)
+        extractTable = page.extract_table({
+            "vertical_strategy": "lines",  # 우선 실선이 있는지 확인
+            "horizontal_strategy": "lines",
+            # 만약 실선이 없다면 아래 explicit_vertical_lines를 활성화하세요.
+            # "vertical_strategy": "explicit",
+            # "explicit_vertical_lines": [좌표값들...],
 
-        # 유형 2의 페이지일 경우
-        if "상해입원의료비" in words[17]:
-            table.append(self.bulidTableGroup("실손의료비", [
-                self.buildTableUsingWord(words, 17),
-                self.buildTableUsingWord(words, 23),
-                self.buildTableUsingWord(words, 30),
-                self.buildTableUsingWord(words, 37),
-                self.buildTableUsingWord(words, 43),
-            ]))
+            "snap_tolerance": 3,
+            "text_x_tolerance": 2,
+            "text_y_tolerance": 3,  # 행 높이 인식을 더 정교하게 함
+            "intersection_y_tolerance": 10,
+        })
 
-            table.append(self.bulidTableGroup("수술입원", [
-                self.buildTableUsingWord(words, 49),
-                self.buildTableUsingWord(words, 55),
-                self.buildTableUsingWord(words, 61),
-                self.buildTableUsingWord(words, 68),
-                self.buildTableUsingWord(words, 75),
-                self.buildTableUsingWord(words, 81),
-                self.buildTableUsingWord(words, 87),
-            ]))
+        extractLines = page.extract_text().splitlines()
+        for i, line in enumerate(extractLines):
+            if "상해사망" in line:
+                startLineIndex = i
+                break
 
-            table.append(self.bulidTableGroup("운전자 기타", [
-                self.buildTableUsingWord(words, 93),
-                self.buildTableUsingWord(words, 99),
-                self.buildTableUsingWord(words, 105),
-                self.buildTableUsingWord(words, 111),
-                self.buildTableUsingWord(words, 119),
-                self.buildTableUsingWord(words, 125),
-                self.buildTableUsingWord(words, 131),
-                self.buildTableUsingWord(words, 137),
-            ]))
+        tables = []
+        if extractTable:
+            items = []
+            previousGroup = ""
+            for row in extractTable:
+                # row는 ['1', 'ABL생명', '무)급여실손...', '2023-10-31', ...] 형태의 리스트입니다.
+                # None 데이터 제거 및 줄바꿈(\n) 처리
+                cleanRow = [str(cell).replace('\n', ' ') if cell else "" for cell in row]
 
-        extractedData["tables"] = table
+                # 이전 데이터가 있을 경우 추가
+                if cleanRow[0] != "" and len(items) > 0:
+                    tables.append(self.buildTableGroup(previousGroup, items))
+
+                # 그룹이 있을 경우 초기화
+                if cleanRow[0] != "":
+                    items = []
+                    previousGroup = cleanRow[0]
+
+                items.append(self.buildTable(cleanRow, extractLines[startLineIndex], headerTableNumbres))
+                startLineIndex = self.nextLineIndex(extractLines, startLineIndex)
+
+        tables.append(self.buildTableGroup(previousGroup, items))
+
+        extractedData["headerTables"] = headerTables
+        extractedData["tables"] = tables
         # print(extractedData)
         return extractedData
 
-    # 전체 보장 현황 테이블 추가
-    # key: 테이블 키
-    # name: 담보명
-    # total: 총 보장액
-    # nonLife: 손해 보험 보장액
-    # life: 생명 보험 보장액
-    # mutual: 공제/체신보험 보장액
-    def buildTable(self, name: str, total: str, nonLife: str, life: str, mutual: str) -> dict:
+    def nextLineIndex(self, extractLines: list, currentIndex: int) -> int:
+        nextIndex = currentIndex + 1
+        pattern = re.compile(r'[\d,]+(?:만|억)|\b0\b|-')
+        while nextIndex < len(extractLines):
+            line = extractLines[nextIndex].strip()
+            if bool(pattern.search(line)):
+                break
+            else:
+                nextIndex += 1
+        return nextIndex
+
+    def buildTable(self, row, line: str, headerTableNumbres) -> dict:
+        # extractTable 에서 index 6 이 없을 경우가 있음
+        if len(row) > 6:
+            lastValue = row[6]
+        else:
+            result = re.findall(r'[\d,]+(?:만|억)|0|-', line)
+            isSecondPage = "(5)" in headerTableNumbres
+            if not isSecondPage:
+                lastValue = result[-1] if result else ""
+            else:
+                lastValue = ""
+
         return {
-            "name": name,
-            "total": total,
-            "nonLife": nonLife,
-            "life": life,
-            "mutual": mutual
+            "name": row[1],
+            "total": row[2],
+            "items": [
+                row[3],
+                row[4],
+                row[5],
+                # index 6 이 없을 경우
+                lastValue,
+            ]
         }
 
-    def bulidTableGroup(self, group: str, items: list) -> dict:
+    def buildTableGroup(self, group: str, items: list) -> dict:
         return {
             "groupName": group,
             "items": items
         }
 
-    def buildTableUsingWord(self, words: list, start: int) -> dict:
-        return self.buildTable(words[start], words[start + 1], words[start + 3], words[start + 4], words[start + 5])
+    def extractPaymentMaturityStr(self, text: str) -> list[Any]:
+        # 정규식 패턴: 숫자+년납/숫자+세 만기
+        pattern = re.compile(r'(?:\d+년납/)?\d+세\s*만기')
+
+        # 모든 매칭 결과 찾기
+        return re.findall(pattern, text)
+
+    def extractPaymentMaturityDate(self, text: str) -> list[Any]:
+        # 날짜 패턴: 숫자.숫자.숫자~숫자.숫자.숫자
+        pattern = r'\d{4}\.\d{2}\.\d{2}~\d{4}\.\d{2}\.\d{2}'
+
+        # 모든 매칭 결과 찾기
+        return re.findall(pattern, text)
+
+    # 헤더 테이블 번호 추출
+    def getHeaderTableNumbers(self, text: str) -> list[Any]:
+        # 정규식 설명: \( (괄호 시작) \d+ (숫자 한 개 이상) \) (괄호 끝)
+        pattern = r'\(\d+\)'
+        return re.findall(pattern, text)
+
+    # 헤더 테이블 수 계산
+    def getHeaderTableCount(self, words: list) -> int:
+        count = 1
+        for i in range(0, len(words)):
+            if re.match(r'^\d+$', words[i]):
+                count += 1
+        return count
