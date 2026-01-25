@@ -103,9 +103,9 @@ class PdfUtil:
 
     # HTML 소스 내의 CSS 링크를 실제 CSS 내용으로 치환 합니다
     def convertHtmlSource(self, html) -> str:
-        with open(self.fileUtil.getAbsolutePath(f"{self.fileUtil.getStylePath()}/print.css"), 'r') as f:
+        with open(self.fileUtil.getAbsolutePath(f"{self.fileUtil.getStylePath()}/print.css"), 'r', encoding='utf-8') as f:
             cssPrint = f.read()
-        with open(self.fileUtil.getAbsolutePath(f"{self.fileUtil.getStylePath()}/components.css"), 'r') as f:
+        with open(self.fileUtil.getAbsolutePath(f"{self.fileUtil.getStylePath()}/components.css"), 'r', encoding='utf-8') as f:
             cssComponent = f.read()
 
             # 2. HTML 내의 link 태그를 <style> 태그로 치환
@@ -128,7 +128,7 @@ class PdfUtil:
         return self.getStyleSource('components')
 
     def getStyleSource(self, file) -> str:
-        with open(self.fileUtil.getAbsolutePath(f"{self.fileUtil.getStylePath()}/{file}.css"), 'r') as f:
+        with open(self.fileUtil.getAbsolutePath(f"{self.fileUtil.getStylePath()}/{file}.css"), 'r', encoding='utf-8') as f:
             cssPrint = f.read()
             return f'<style>{cssPrint}</style>'
 

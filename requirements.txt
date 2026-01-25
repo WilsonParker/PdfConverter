@@ -2,7 +2,6 @@ PyMuPDF
 pathlib
 pdfplumber
 jinja2
-json
 playwright
 pdfkit
-copy
+python-dateutil
