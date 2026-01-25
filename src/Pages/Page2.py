@@ -27,8 +27,8 @@ class Page2(BasePage):
     def extract(self, page, pdfData: dict) -> dict:
         words = self.convertWords(page)
         # self.printWords(words)
-
-        extractedData = self.buildBaseData2(words, pdfData['page1'])
+        page1Data = pdfData['page1'][0]
+        extractedData = self.buildBaseData2(words, page1Data)
         headerTables = []
 
         text = page.extract_text()
@@ -37,11 +37,10 @@ class Page2(BasePage):
         paymentMaturityDate = self.extractPaymentMaturityDate(text)
 
         for n, number in enumerate(headerTableNumbres):
-            for i, table in enumerate(pdfData['page1']['tables']):
+            for i, table in enumerate(page1Data['tables']):
                 index = int(number.replace("(", "").replace(")", "")) - 1
                 if i != index:
                     continue
-
                 # 2년납/55세 만기
                 table['payment_maturity_str'] = paymentMaturityStr[n]
                 # 2023.10.31~2055.10.30
