@@ -98,7 +98,9 @@
         text-align: right !important;
         padding-right: 15px !important;
         font-weight: 700;
-        color: var(--color-primary);
+      }
+      .premium-amount {
+        color: #FF6200;
       }
       .col-dates {
         font-size: 12px;
@@ -154,7 +156,10 @@
               </td>
               <td>{{ row_data.payment_cycle }}</td>
               <td>{{ row_data.payment_period }}</td>
-              <td>{{ row_data.monthly_insurance_premium }}</td>
+              <td class="col-premium">
+                {% set price = row_data.monthly_insurance_premium | split_price %}
+                <span class="premium-amount">{{ price.amount }}</span>{{ price.unit }}
+              </td>
             </tr>
             {% endfor %}
           </tbody>
