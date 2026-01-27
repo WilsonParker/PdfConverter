@@ -61,6 +61,12 @@ class BasePage(ABC):
 
     # 기본 데이터 추출 (페이지 1, 2 공통)
     def buildBaseData(self, words) -> dict:
+        # isNumberOfInsuranceContracts 가 숫자인지 여부 22, 아닌 경우 기본형(37개)/표준형
+        if _is_integer(words[11]):
+            isNumberOfInsuranceContracts = True
+        else:
+            isNumberOfInsuranceContracts = False
+
         return {
             # 고객 이름
             "user_name": words[0],
@@ -71,9 +77,9 @@ class BasePage(ABC):
             # 성별
             "gender": self.stringUtil.removeSpecialCharacters(words[7]),
             # 정상 계약 건수
-            "number_of_insurance_contracts": words[11],
+            "number_of_insurance_contracts": words[11] if isNumberOfInsuranceContracts else words[12],
             # 월 보험료
-            "monthly_insurance_premium": words[12],
+            "monthly_insurance_premium": words[12] if isNumberOfInsuranceContracts else words[13],
             # 손해 보험
             "non_life_insurance": words[14],
             # 생명 보험
@@ -105,3 +111,11 @@ class BasePage(ABC):
             # 페이지 최대 길이
             "max_length": self.getMaxLength(),
         }
+
+
+def _is_integer(value: str) -> bool:
+    try:
+        int(value)
+        return True
+    except ValueError:
+        return False

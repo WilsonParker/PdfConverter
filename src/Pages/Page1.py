@@ -56,6 +56,8 @@ class Page1(BasePage):
                 tables.append(self.appendTable(cleanRow))
 
         extractedData = self.buildBaseData(words)
+        self.printWords(words)
+        print(extractedData)
 
         extractedData["tables"] = tables
         # print(extractedData)
