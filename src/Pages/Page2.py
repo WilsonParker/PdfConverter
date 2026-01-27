@@ -1,3 +1,4 @@
+import copy
 import re
 from typing import Any
 
@@ -47,7 +48,7 @@ class Page2(BasePage):
         paymentMaturityDate = self.extractPaymentMaturityDate(text)
 
         for n, number in enumerate(headerTableNumbres):
-            for i, table in enumerate(page1DataTables):
+            for i, table in enumerate(copy.deepcopy(page1DataTables)):
                 index = int(number.replace("(", "").replace(")", "")) - 1
                 if i != index:
                     continue

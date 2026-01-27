@@ -150,7 +150,7 @@
             {% for row_data in data.tables %}
             <tr>
               {# 데이터가 있을 때 출력 (Jinja2 문법 {{ }} 사용) #}
-              <td>{{ loop.index }}</td>
+              <td>{{ row_data.index }}</td>
               <td>{{ row_data.company_name }}</td>
               <td class="col-product">{{ row_data.product_name }}</td>
               <td class="col-dates">

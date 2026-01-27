@@ -63,6 +63,8 @@ class Page1(BasePage):
 
     def appendTable(self, row) -> dict:
         return {
+            # 순서
+            "index": row[0],
             # 회사명
             "company_name": row[1],
             # 상품명
