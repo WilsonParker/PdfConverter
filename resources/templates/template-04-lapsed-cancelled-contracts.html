@@ -156,9 +156,8 @@
               </td>
               <td>{{ row_data.payment_cycle }}</td>
               <td>{{ row_data.payment_period }}</td>
-              <td class="col-premium">
-                {% set price = row_data.monthly_insurance_premium | split_price %}
-                <span class="premium-amount">{{ price.amount }}</span>{{ price.unit }}
+              <td class="">
+                <span class="premium-amount">{{ row_data.monthly_premium }}</span>
               </td>
             </tr>
             {% endfor %}

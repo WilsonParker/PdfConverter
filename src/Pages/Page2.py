@@ -30,22 +30,29 @@ class Page2(BasePage):
 
         if isinstance(pdfData['page1'], list):
             page1Data = pdfData['page1'][0]
+            page1DataTables = []
+            for data in pdfData['page1']:
+                page1DataTables.extend(data['tables'])
         else:
             page1Data = pdfData['page1']
+            page1DataTables = pdfData['page1']['tables']
 
         extractedData = self.buildBaseData2(words, page1Data)
         headerTables = []
 
         text = page.extract_text()
+        totalCount = len(page1DataTables)
         headerTableNumbres = self.getHeaderTableNumbers(text)
         paymentMaturityStr = self.extractPaymentMaturityStr(text)
         paymentMaturityDate = self.extractPaymentMaturityDate(text)
 
         for n, number in enumerate(headerTableNumbres):
-            for i, table in enumerate(page1Data['tables']):
+            for i, table in enumerate(page1DataTables):
                 index = int(number.replace("(", "").replace(")", "")) - 1
                 if i != index:
                     continue
+                # (1) 삼성생명
+                table['company_name'] = f"{number} {table['company_name']}"
                 # 2년납/55세 만기
                 table['payment_maturity_str'] = paymentMaturityStr[n]
                 # 2023.10.31~2055.10.30
@@ -67,6 +74,7 @@ class Page2(BasePage):
         })
 
         extractLines = page.extract_text().splitlines()
+
         for i, line in enumerate(extractLines):
             if "상해사망" in line:
                 startLineIndex = i
@@ -89,8 +97,8 @@ class Page2(BasePage):
                 if cleanRow[0] != "":
                     items = []
                     previousGroup = cleanRow[0]
-
-                items.append(self.buildTable(cleanRow, extractLines[startLineIndex], headerTableNumbres))
+                # print(cleanRow)
+                items.append(self.buildTable(cleanRow, extractLines[startLineIndex], headerTableNumbres, totalCount))
                 startLineIndex = self.nextLineIndex(extractLines, startLineIndex)
 
         tables.append(self.buildTableGroup(previousGroup, items))
@@ -111,17 +119,26 @@ class Page2(BasePage):
                 nextIndex += 1
         return nextIndex
 
-    def buildTable(self, row, line: str, headerTableNumbres) -> dict:
+    def buildTable(self, row, line: str, headerTableNumbres, totalCount: int) -> dict:
         # extractTable 에서 index 6 이 없을 경우가 있음
         if len(row) > 6:
             lastValue = row[6]
         else:
-            result = re.findall(r'[\d,]+(?:만|억)|0|-', line)
-            isSecondPage = "(5)" in headerTableNumbres
-            if not isSecondPage:
-                lastValue = result[-1] if result else ""
-            else:
+            pattern = r"([\d,]+억(?:\s*[\d,]+만)?|[\d,]+만)|(-)"
+
+            # 추출 후 빈 값을 제외하고 리스트화
+            result = [m[0] or m[1] for m in re.findall(pattern, line)]
+
+            # headerTableNumbres에서 totalCount보다 작거나 같은 숫자의 개수를 셉니다.
+            count = sum(1 for num_str in headerTableNumbres if int(num_str.strip('()')) <= totalCount)
+
+            # 빈 컬럼이 있는지 확인
+            hasEmptyColumn = count > 0 and len(result) < 5
+
+            if hasEmptyColumn:
                 lastValue = ""
+            else:
+                lastValue = result[4]
 
         return {
             "name": row[1],
