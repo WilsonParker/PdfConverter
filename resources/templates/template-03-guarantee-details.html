@@ -1,147 +1,147 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Template 03. 보장 내역 현황</title>
     <!--<link rel="stylesheet" href="/resources/styles/print.css" />-->
     {{ styleComponents | safe}}
     <style>
-        /* 상세 보장 내역 전용 테이블 스타일 */
-        .details-table {
-          width: 100%;
-          border-collapse: collapse;
-          font-size: 11px;
-          table-layout: fixed;
-          /* 최상단 메인 라인 */
-          border-top: 1.5px solid var(--color-primary);
-        }
+      /* 상세 보장 내역 전용 테이블 스타일 */
+      .details-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 11px;
+        table-layout: fixed;
+        /* 최상단 메인 라인 - 셀 경계 단차 방지용으로 pseudo 요소 사용 */
+        position: relative;
+      }
+      .details-table::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1.5px;
+        background: var(--color-primary);
+        pointer-events: none;
+      }
 
-        .details-table thead th {
-          background: var(--color-primary-op8);
-          color: var(--color-white);
-          padding: 10px 4px;
-          font-weight: 600;
-          border-right: 1px solid rgba(255, 255, 255, 0.2);
-          text-align: center;
-        }
+      .details-table thead th {
+        background: var(--color-primary-op8);
+        color: var(--color-white);
+        padding: 10px 4px;
+        font-weight: 600;
+        border-right: 1px solid rgba(255, 255, 255, 0.2);
+        text-align: center;
+      }
 
-        .details-table thead th:last-child {
-          border-right: none;
-        }
+      .details-table thead th:last-child {
+        border-right: none;
+      }
 
-        .details-table tbody td {
-          padding: 4px 8px;
-          height: 28px; /* 모든 행의 고정 높이 */
-          border-right: 1px solid var(--color-primary-op5);
-          vertical-align: middle;
-          box-sizing: border-box;
-          border-bottom: none; /* 기본 바닥선 제거하여 묶음 처리 준비 */
-          border-bottom: 1px solid var(--color-primary-op5) !important;
-        }
+      .details-table tbody td {
+        padding: 4px 8px;
+        height: 28px; /* 모든 행의 고정 높이 */
+        border-right: 1px solid var(--color-primary-op5);
+        vertical-align: middle;
+        box-sizing: border-box;
+        border-bottom: none; /* 기본 바닥선 제거하여 묶음 처리 준비 */
+        border-bottom: 1px solid var(--color-primary-op5) !important;
+      }
 
-        .details-table tbody td:last-child {
-          border-right: none;
-        }
+      .details-table tbody td:last-child {
+        border-right: none;
+      }
 
-        /* 표준담보명 컬럼 배경색 고정 (데이터 유무 상관없음) */
-        .col-standard {
-          background-color: var(--color-primary-op1);
-          color: var(--color-primary);
-          font-weight: 700;
-          text-align: center;
-          line-height: 1.2;
-          font-size: 13px;
-        }
+      /* 표준담보명 컬럼 배경색 고정 (데이터 유무 상관없음) */
+      .col-standard {
+        background-color: var(--color-primary-op1);
+        color: var(--color-primary);
+        font-weight: 700;
+        text-align: center;
+        line-height: 1.2;
+        font-size: 13px;
+      }
 
-        /* 새로운 그룹이 시작되는 행의 상단 라인 */
-        .group-start td {
-          border-top: 1px solid var(--color-primary-op5) !important; /* 진한 구분선 */
-        }
+      /* 새로운 그룹이 시작되는 행의 상단 라인 */
+      .group-start td {
+        border-top: 1px solid var(--color-primary-op5) !important; /* 진한 구분선 */
+      }
 
-        /* 동일 그룹 내 항목 구분 상단 라인 */
-        .border-top td {
-          border-top: 1px solid var(--color-primary-op5) !important; /* 연한 구분선 */
-        }
+      /* 동일 그룹 내 항목 구분 상단 라인 */
+      .border-top td {
+        border-top: 1px solid var(--color-primary-op5) !important; /* 연한 구분선 */
+      }
 
-        /* 금액 컬럼 강조 */
-        .col-amount {
-          text-align: right;
-          font-weight: 700;
-        }
+      /* 금액 컬럼 강조 */
+      .col-amount {
+        text-align: right;
+        font-weight: 700;
+      }
 
-        /* 날짜/기간 컬럼 */
-        .col-period {
-          text-align: center;
-          font-size: 10px;
-        }
+      /* 날짜/기간 컬럼 */
+      .col-period {
+        text-align: center;
+        font-size: 10px;
+      }
 
-        .row-empty td {
-          border-top: 1px solid var(--color-primary-op5) !important;
-          color: transparent;
-        }
+      .row-empty td {
+        border-top: 1px solid var(--color-primary-op5) !important;
+        color: transparent;
+      }
 
-        /* 빈 행의 첫번째 칸 배경색 강제 적용 */
-        .row-empty td.col-standard {
-          background-color: var(--color-primary-op1) !important;
-        }
+      /* 빈 행의 첫번째 칸 배경색 강제 적용 */
+      .row-empty td.col-standard {
+        background-color: var(--color-primary-op1) !important;
+      }
 
-        .text-center {
-          text-align: center;
-        }
+      .text-center {
+        text-align: center;
+      }
     </style>
-</head>
-<body>
-<div class="page" data-id="template-03-guarantee-details">
-    <section>
+  </head>
+  <body>
+    <div class="page" data-id="template-03-guarantee-details">
+      <section>
         <div class="section-title">보장내역 현황</div>
 
         <table class="details-table">
-            <thead>
+          <thead>
             <tr>
-                <th style="width: 10%">표준담보명</th>
-                <th style="width: 10%">회사명</th>
-                <th style="width: 30%">상품명</th>
-                <th style="width: 30%">회사담보명</th>
-                <th style="width: 8%">가입금액</th>
-                <th style="width: 20%">보험기간</th>
+              <th style="width: 10%">표준담보명</th>
+              <th style="width: 10%">회사명</th>
+              <th style="width: 30%">상품명</th>
+              <th style="width: 30%">회사담보명</th>
+              <th style="width: 8%">가입금액</th>
+              <th style="width: 20%">보험기간</th>
             </tr>
-            </thead>
-            <tbody data-id="details-list">
-            {% for group in data.tables %}
-            {# 부모 루프의 상태를 변수에 저장 #}
-            {% set parentLoop = loop %}
-
-            {% for subGroup in group['items'] %}
-                {% set subParentLoop = loop %}
-                {% for item in subGroup['items'] %}
-                <tr>
-                    {# 1. 표준담보명 (전체 아이템 개수만큼 rowspan) #}
-                    {% if subParentLoop.first and loop.first %}
-                    <td class="col-standard" rowspan="{{group.totalSubRowCount}}">
-                        {{ group.groupName | replace('\n', '<br>') | safe }}
-                    </td>
-                    {% endif %}
-
-                    {# 2. 회사명 (해당 서브그룹의 아이템 개수만큼 rowspan) #}
-                    {% if loop.first %}
-                    <td class="col-company text-center" rowspan="{{ subGroup['items'] | length }}">
-                        {{ subGroup.subGroupName | replace('\n', '<br>') | safe }}
-                    </td>
-                    {% endif %}
-
-                    {# 3. 나머지 데이터 #}
-                    <td>{{ item.product_name }}</td>
-                    <td>{{ item.company_collateral }}</td>
-                    <td class="col-amount">{{ item.subscription_amount }}</td>
-                    <td class="col-period">{{ item.insurance_period }} ~ {{ item.insurance_term }}</td>
-                </tr>
-                {% endfor %}
-            {% endfor %}
-            {% endfor %}
-            </tbody>
+          </thead>
+          <tbody data-id="details-list">
+            {% for group in data.tables %} {# 부모 루프의 상태를 변수에 저장 #} {% set parentLoop =
+            loop %} {% for subGroup in group['items'] %} {% set subParentLoop = loop %} {% for item
+            in subGroup['items'] %}
+            <tr>
+              {# 1. 표준담보명 (전체 아이템 개수만큼 rowspan) #} {% if subParentLoop.first and
+              loop.first %}
+              <td class="col-standard" rowspan="{{group.totalSubRowCount}}">
+                {{ group.groupName | replace('\n', '<br />') | safe }}
+              </td>
+              {% endif %} {# 2. 회사명 (해당 서브그룹의 아이템 개수만큼 rowspan) #} {% if loop.first
+              %}
+              <td class="col-company text-center" rowspan="{{ subGroup['items'] | length }}">
+                {{ subGroup.subGroupName | replace('\n', '<br />') | safe }}
+              </td>
+              {% endif %} {# 3. 나머지 데이터 #}
+              <td>{{ item.product_name }}</td>
+              <td>{{ item.company_collateral }}</td>
+              <td class="col-amount">{{ item.subscription_amount }}</td>
+              <td class="col-period">{{ item.insurance_period }} ~ {{ item.insurance_term }}</td>
+            </tr>
+            {% endfor %} {% endfor %} {% endfor %}
+          </tbody>
         </table>
-    </section>
-</div>
-</body>
+      </section>
+    </div>
+  </body>
 </html>

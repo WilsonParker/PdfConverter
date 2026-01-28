@@ -94,12 +94,9 @@
         text-align: left !important;
         padding-left: 15px !important;
       }
-      .col-premium {
-        text-align: right !important;
-        padding-right: 15px !important;
-        font-weight: 700;
+      .premium-amount {
+        color: #ff6200;
       }
-      .premium-amount { color: inherit; }
       .col-dates {
         font-size: 12px;
         letter-spacing: -0.5px;
@@ -156,7 +153,8 @@
               <td>{{ row_data.payment_period }}</td>
               <td class="">
                 <span class="premium-amount">
-                  {{ row_data.monthly_premium | replace('원','<span class="unit">원</span>') | safe }}
+                  {{ row_data.monthly_premium | replace('원','<span class="unit">원</span>') | safe
+                  }}
                 </span>
               </td>
             </tr>

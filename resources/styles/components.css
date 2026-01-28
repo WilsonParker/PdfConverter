@@ -35,6 +35,9 @@ ul {
   padding: 0;
   margin: 0;
 }
+table {
+  color: var(--color-primary);
+}
 
 .page {
   width: 100%;
