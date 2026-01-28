@@ -46,7 +46,7 @@ ul {
   position: relative;
   box-shadow: none;
   box-sizing: border-box;
-  zoom: 0.7;
+  zoom: 0.75;
 }
 
 /* Utilities */
@@ -86,4 +86,9 @@ section {
   display: flex;
   flex-direction: column;
   gap: 28px;
+}
+
+/* Currency unit color */
+.unit {
+  color: var(--color-primary);
 }
