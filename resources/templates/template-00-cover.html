@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Template 00. 표지</title>
+    {{ styleComponents | safe}}
+    <style>
+      /* Cover page */
+      .page.cover-page {
+        width: 100%;
+        min-height: 100%;
+        background: var(--color-primary) !important;
+        color: var(--color-white) !important;
+        position: relative;
+        margin: 0;
+        padding: 0 !important;
+        box-sizing: border-box;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .cover-inner {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        gap: 12px;
+        padding-bottom: 100px;
+      }
+
+      .title-kr {
+        font-size: 32px;
+        line-height: 1.2;
+        font-weight: 500;
+      }
+
+      .title-en {
+        font-size: 25px;
+        font-weight: 300;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page cover-page" data-id="template-00-cover">
+      <div class="cover-inner">
+        <div class="title-kr">보험 포트폴리오</div>
+        <div class="title-en">Insurance Portfolio</div>
+      </div>
+    </div>
+  </body>
+</html>
