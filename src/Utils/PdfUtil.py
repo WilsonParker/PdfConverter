@@ -5,6 +5,7 @@ from jinja2 import Environment, FileSystemLoader
 # 설치: pip install playwright && playwright install chromium
 from playwright.sync_api import sync_playwright
 
+from src.Pages.Page0 import Page0
 from src.Pages.Page1 import Page1
 from src.Pages.Page2 import Page2
 from src.Pages.Page3 import Page3
@@ -27,6 +28,11 @@ class PdfUtil:
     def convertPdfToData(self, path: str) -> dict[str, Any]:
         pdfData = {}
 
+        # 표지 추가
+        pdfData['page0'] = {
+            'template': Page0().getTemplatePage()
+        }
+
         # 페이지 데이터 초기화
         for item in self.composites:
             pdfData[item.getKey()] = []
@@ -47,7 +53,6 @@ class PdfUtil:
                                 pdfData[item.getKey()] = item.dividePage(pdfData[item.getKey()], extractData)
                             else:
                                 pdfData[item.getKey()] = extractData
-
         return pdfData
 
     # 데이터를 HTML로 변환 합니다
@@ -62,7 +67,6 @@ class PdfUtil:
                 renderedHtml.append(self.convertHtmlSource(self.fileUtil.readPdf(value["template"], value)))
 
         ##################################################
-        print(renderedHtml)
 
         # 테스트 용
         # 4. 결과 저장

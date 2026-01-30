@@ -7,7 +7,6 @@ fileUtil = FileUtil()
 try:
     for pdfPath in fileUtil.getPaths(fileUtil.getInputPath()):
         data = pdfUtil.convertPdfToData(pdfPath)
-        # print(data)
         htmlStr = pdfUtil.convertDataToPythonHtml(data)
         pdfUtil.convertHtmlToPdf(htmlStr, fileUtil.getFileName(pdfPath))
         print(f"{pdfPath} 완료")
